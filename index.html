@@ -43,6 +43,8 @@ body.menu #main{transform:translateX(3vh)}
 #mode{position:fixed;top:4vh;right:5vw;z-index:4;display:flex;border-radius:99px;overflow:hidden;font-size:1.9vh;font-weight:500;background:rgba(0,0,0,.25);-webkit-backdrop-filter:blur(2vh);backdrop-filter:blur(2vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.3)}
 #mode span{padding:1vh 2.4vh;color:var(--mute);transition:background .3s,color .3s}
 #mode span.on{background:var(--cream);color:var(--bg)}
+#mode{opacity:0;transform:translateY(-3vh);pointer-events:none;transition:opacity .4s,transform .6s var(--spring)}
+body.modeshow #mode{opacity:1;transform:none}
 
 /* Controles: abajo a la derecha, sin tapar el contenido */
 #hints{position:fixed;right:3vw;bottom:3vh;z-index:6;display:flex;gap:2.2vh;padding:1.1vh 2vh;border-radius:99px;font-size:1.6vh;font-weight:500;background:rgba(14,11,9,.6);-webkit-backdrop-filter:blur(2.4vh);backdrop-filter:blur(2.4vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.18)}
@@ -172,7 +174,9 @@ function setMode(m) {
   mode = m; sec = T[m].start;
   closeMenu();
   render();
-  toast(NAME[m]);
+  document.body.classList.add("modeshow");   // el selector aparece un momento y se quita solo
+  clearTimeout(setMode.timer);
+  setMode.timer = setTimeout(() => document.body.classList.remove("modeshow"), 2200);
 }
 function pick(i) {
   if (T[mode].menu[i] == "Ajustes") { closeMenu(); openSheet(); return; }
@@ -186,7 +190,7 @@ function openSheet() {
   $("sheet").innerHTML =
     '<h2>Ajustes</h2>' +
     '<div class="srow"><span>Iniciar en</span><button class="sbtn" id="s0">' + NAME[start] + '</button></div>' +
-    '<div class="srow"><span>Tu cuenta</span><button class="sbtn" id="s1">Cerrar sesión</button></div>' +
+    '<div class="srow"><span>Tu cuenta</span><button class="sbtn" id="s1">' + (logged ? "Cerrar sesión" : "Iniciar sesión") + '</button></div>' +
     '<div class="srow" style="justify-content:flex-end"><button class="sbtn danger" id="s2">Cerrar app</button></div>';
   ["s0", "s1", "s2"].forEach((id, i) => { $(id).onclick = () => { si = i; sheetOk(); }; });
   document.body.classList.add("sheet");
@@ -199,7 +203,7 @@ function sheetOk() {
     $("s0").textContent = NAME[start];
     toast("Iniciará en " + NAME[start]);
   } else if (si == 1) {
-    toast("Se activa cuando conectemos tu cuenta");
+    send(logged ? "logout" : "login");
   } else {
     try { window.chrome.webview.postMessage("quit"); } catch (e) { window.close(); }   // C# cierra la ventana
   }
@@ -256,8 +260,24 @@ function pad() {
   requestAnimationFrame(pad);
 }
 
+// ---------- Cuenta (habla con la app de Windows) ----------
+let logged = false;   // ¿hay sesión iniciada?
+function send(m) {
+  try { window.chrome.webview.postMessage(m); }
+  catch (e) { toast("Esto solo funciona dentro de la app"); }
+}
+try {
+  window.chrome.webview.addEventListener("message", e => {
+    if (e.data == "login:ok") { if (!logged) { toast("Cuenta conectada"); } logged = true; }
+    else if (e.data == "login:no") { logged = false; }
+    const b = $("s1");
+    if (b) { b.textContent = logged ? "Cerrar sesión" : "Iniciar sesión"; }
+  });
+} catch (e) { }
+
 render();
 pad();
+try { window.chrome.webview.postMessage("status"); } catch (e) { }   // pregunta si ya había sesión
 </script>
 </body>
 </html>
