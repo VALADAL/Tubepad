@@ -59,6 +59,9 @@ body.sheet #sheet{opacity:1;visibility:visible;transform:translate(-50%,-50%)}
 .sbtn.f{background:var(--cream);color:var(--bg);transform:scale(1.06)}
 .sbtn.danger{color:#F0997B}
 .sbtn.danger.f{background:#F0997B;color:var(--bg)}
+#player{position:fixed;inset:0;z-index:7;background:#000;display:none}
+body.play #player{display:block}
+#player iframe{width:100%;height:100%;border:0;pointer-events:none}
 #toast{position:fixed;left:50%;bottom:12vh;z-index:9;transform:translate(-50%,2vh);opacity:0;padding:1.4vh 3vh;border-radius:99px;font-size:1.9vh;font-weight:500;background:var(--cream);color:var(--bg);transition:all .4s var(--ease);pointer-events:none}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01s!important}}
@@ -73,7 +76,7 @@ body.sheet #sheet{opacity:1;visibility:visible;transform:translate(-50%,-50%)}
 <div id="main"><div id="ht"></div><div id="hs">Datos de ejemplo. Aquí aparecerá lo tuyo cuando conectemos tu cuenta.</div><div id="rows"></div></div>
 <div id="hints"><span><b>A</b>Elegir</span><span><b>B</b>Menú</span><span><b>Y</b>Modo</span></div>
 <div id="sheet"></div>
-<div id="toast"></div>
+<div id="player"></div><div id="toast"></div>
 
 <script>
 // ---------- Utilidades ----------
@@ -98,7 +101,7 @@ function art(i) {
   if (k == 0) { s += '<circle cx="100" cy="100" r="58" fill="' + p[1] + '" opacity=".85"/>'; }
   else if (k == 1) { s += '<path d="M0 200L200 40V200Z" fill="' + p[1] + '" opacity=".8"/>'; }
   else { s += '<rect x="30" y="30" width="30" height="140" fill="' + p[1] + '"/><rect x="85" y="60" width="30" height="110" fill="' + p[1] + '" opacity=".7"/><rect x="140" y="90" width="30" height="80" fill="' + p[1] + '" opacity=".5"/>'; }
-  return 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">' + s + '</svg>') + '")';
+  return "url('data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">' + s + '</svg>') + "')";
 }
 
 // ---------- Datos de cada modo ----------
@@ -125,8 +128,14 @@ let start = store.get("start") || "music";   // en qué modo inicia la app
 let mode = start, sec = T[mode].start;
 let zone = "main";   // "main", "menu" o "sheet"
 let r = 0, c = 0, mi = 0, si = 0, bgOn = 0, lastBg = "";
+let cur = "", paused = false;   // cur: qué sección estamos esperando de YouTube
 
 // ---------- Dibujar la pantalla ----------
+const esc = s => String(s).replace(/[&<>"']/g, ch => "&#" + ch.charCodeAt(0) + ";");
+function tile(n, i) {   // n puede ser texto (ejemplo) o {id, t, s, bg} (real)
+  const o = typeof n == "string" ? { t: n, s: "Ejemplo", bg: art(i + (mode == "video" ? 3 : 0)) } : n;
+  return '<div class="tile"><div class="art" style="background-image:' + esc(o.bg) + '"></div><div class="nm">' + esc(o.t) + '</div><div class="sb">' + esc(o.s) + '</div></div>';
+}
 function render() {
   const d = T[mode];
   document.body.classList.toggle("video", mode == "video");
@@ -134,8 +143,8 @@ function render() {
   $("ht").textContent = d.menu[sec];
   $("menu").innerHTML = d.menu.map((n, i) => '<div class="bub" style="--i:' + i + '">' + n + '</div>').join("");
   $("rows").innerHTML = d.rows.map((row, ri) =>
-    '<div class="row"><div class="lbl">' + row[0] + '</div><div class="track">' +
-    row[1].map((n, i) => '<div class="tile"><div class="art" style="background-image:' + art(ri * 5 + i + (mode == "video" ? 3 : 0)) + '"></div><div class="nm">' + n + '</div><div class="sb">Ejemplo</div></div>').join("") +
+    '<div class="row"><div class="lbl">' + esc(row[0]) + '</div><div class="track">' +
+    row[1].map((n, i) => tile(n, ri * 5 + i)).join("") +
     '</div></div>').join("");
   r = 0; c = 0;
   refresh();
@@ -174,6 +183,7 @@ function setMode(m) {
   mode = m; sec = T[m].start;
   closeMenu();
   render();
+  load();
   document.body.classList.add("modeshow");   // el selector aparece un momento y se quita solo
   clearTimeout(setMode.timer);
   setMode.timer = setTimeout(() => document.body.classList.remove("modeshow"), 2200);
@@ -181,9 +191,9 @@ function setMode(m) {
 function pick(i) {
   if (T[mode].menu[i] == "Ajustes") { closeMenu(); openSheet(); return; }
   sec = i;
-  $("ht").textContent = T[mode].menu[i];
   closeMenu();
-  r = 0; c = 0;
+  render();
+  load();
 }
 function openSheet() {
   zone = "sheet"; si = 0;
@@ -211,6 +221,11 @@ function sheetOk() {
 
 // ---------- Control (teclado y gamepad usan lo mismo) ----------
 function press(a) {
+  if (zone == "play") {   // reproductor: A pausa / continúa, B sale
+    if (a == "ok") { paused = !paused; cmd(paused ? "pauseVideo" : "playVideo"); }
+    else if (a == "back" || a == "menu") { stop(); }
+    return;
+  }
   if (zone == "sheet") {
     if (a == "up") { si = Math.max(0, si - 1); }
     else if (a == "down") { si = Math.min(2, si + 1); }
@@ -231,7 +246,7 @@ function press(a) {
   else if (a == "right") { c = Math.min(n - 1, c + 1); }
   else if (a == "up") { r = Math.max(0, r - 1); c = Math.min(c, T[mode].rows[r][1].length - 1); }
   else if (a == "down") { r = Math.min(T[mode].rows.length - 1, r + 1); c = Math.min(c, T[mode].rows[r][1].length - 1); }
-  else if (a == "ok") { toast("Aquí empezará a sonar en el paso 2"); }
+  else if (a == "ok") { const it = T[mode].rows[r][1][c]; if (typeof it == "string") { toast("Son datos de ejemplo"); } else { play(it); } }
   else if (a == "back" || a == "menu") { openMenu(); }
   refresh();
 }
@@ -260,6 +275,38 @@ function pad() {
   requestAnimationFrame(pad);
 }
 
+// ---------- Datos reales y reproductor ----------
+// A qué pantalla de YouTube corresponde cada opción del menú
+const BROWSE = {
+  music: { "Inicio": "FEmusic_home", "Para ti": "FEmusic_home", "Biblioteca": "FEmusic_liked_videos", "Historial": "FEmusic_history" },
+  video: { "Inicio": "FEwhat_to_watch", "Suscripciones": "FEsubscriptions", "Biblioteca": "FElibrary", "Historial": "FEhistory" }
+};
+function load() {   // le pide a la app de Windows los datos de la sección actual
+  const id = (BROWSE[mode] || {})[T[mode].menu[sec]];
+  if (!id) { return; }
+  cur = mode + "|" + id;
+  try { window.chrome.webview.postMessage("browse|" + mode + "|" + id + "|" + T[mode].menu[sec]); } catch (e) { }
+}
+function onData(d) {
+  if (d.key != cur) { return; }   // llegó tarde: ya cambiaste de sección
+  if (d.error || !d.rows.length) { toast(logged ? "No se pudo cargar esto" : "Inicia sesión en Ajustes para ver lo tuyo"); return; }
+  T[mode].rows = d.rows.map(x => [x[0], x[1].map(i => ({ id: i.id, t: i.t, s: i.s, bg: "url('" + (i.img || "").replace(/['"()\s]/g, "") + "')" }))]);
+  $("hs").textContent = NAME[mode];
+  render();
+}
+function play(o) {
+  const origin = location.protocol.startsWith("http") ? "&origin=" + encodeURIComponent(location.origin) : "";
+  $("player").innerHTML = '<iframe allow="autoplay; encrypted-media" src="https://www.youtube.com/embed/' + o.id + '?autoplay=1&enablejsapi=1&rel=0&playsinline=1' + origin + '"></iframe>';
+  zone = "play"; paused = false;
+  document.body.classList.add("play");
+  toast(o.t + "  ·  A pausa  ·  B salir");
+}
+function stop() { $("player").innerHTML = ""; zone = "main"; document.body.classList.remove("play"); }
+function cmd(f) {
+  const fr = document.querySelector("#player iframe");
+  if (fr) { fr.contentWindow.postMessage(JSON.stringify({ event: "command", func: f, args: "" }), "*"); }
+}
+
 // ---------- Cuenta (habla con la app de Windows) ----------
 let logged = false;   // ¿hay sesión iniciada?
 function send(m) {
@@ -268,7 +315,8 @@ function send(m) {
 }
 try {
   window.chrome.webview.addEventListener("message", e => {
-    if (e.data == "login:ok") { if (!logged) { toast("Cuenta conectada"); } logged = true; }
+    if (typeof e.data == "string" && e.data.startsWith("data:")) { return onData(JSON.parse(e.data.slice(5))); }
+    if (e.data == "login:ok") { if (!logged) { toast("Cuenta conectada"); load(); } logged = true; }
     else if (e.data == "login:no") { logged = false; }
     const b = $("s1");
     if (b) { b.textContent = logged ? "Cerrar sesión" : "Iniciar sesión"; }
@@ -276,6 +324,7 @@ try {
 } catch (e) { }
 
 render();
+load();
 pad();
 try { window.chrome.webview.postMessage("status"); } catch (e) { }   // pregunta si ya había sesión
 </script>
