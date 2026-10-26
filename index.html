@@ -27,7 +27,7 @@ body.menu #main{transform:translateX(3vh)}
 #ht{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:8.4vh;line-height:1;letter-spacing:-.02em}
 #hs{margin-top:1.2vh;font-size:2.1vh;color:var(--mute)}
 #rows{position:absolute;left:0;right:0;top:20vh;transition:transform .6s var(--ease);transform:translateY(calc(var(--r,0) * -40vh))}
-.row{height:40vh;opacity:.35;transition:opacity .5s}
+.row{opacity:.35;transition:opacity .5s;padding-bottom:3vh}.row.car{height:40vh}
 .row.on{opacity:1}
 .lbl{font-family:Fraunces,Georgia,serif;font-size:3vh;margin-bottom:2vh}
 .track{display:flex;gap:var(--gap);transition:transform .55s var(--ease);transform:translateX(calc(var(--off,0) * (var(--tw) + var(--gap)) * -1))}
@@ -70,6 +70,22 @@ body.play #player{display:block}
 #npi{min-width:0;flex:1}#npt,#npa{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #npt{font-size:2vh;font-weight:500}#npa{font-size:1.7vh;color:var(--mute)}
 #npb{height:.5vh;border-radius:9px;background:rgba(255,255,255,.2);margin-top:1.2vh}#npb i{display:block;height:100%;width:0;border-radius:9px;background:var(--cream)}
+#ht{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:86vw}
+.li{display:flex;align-items:center;gap:2vh;height:8.4vh;width:56vw;padding:0 1.6vh;border-radius:1.2vh;transition:background .25s,transform .4s var(--spring)}
+.li.f{background:rgba(255,255,255,.14);transform:translateX(1vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.3)}
+.lc{width:6.4vh;height:6.4vh;border-radius:.6vh;background:#333 center/cover;flex:none}.lt{min-width:0}.lt .nm,.lt .sb{margin:0;transform:none!important}
+#gate{position:fixed;inset:0;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;gap:3vh;background:radial-gradient(circle at 50% 40%,#3a2a20,var(--bg) 70%);text-align:center}
+body.gate #gate{display:flex}
+.gt{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:11vh;letter-spacing:-.02em}.gs{font-size:2.4vh;color:var(--mute)}.gh{font-size:1.7vh;color:var(--mute)}
+#gate .sbtn{font-size:2.6vh;padding:1.6vh 6vh}
+#now{position:fixed;inset:0;z-index:7;display:none;flex-direction:column;align-items:center;justify-content:center;gap:1.4vh}
+body.now #now{display:flex}
+#nowbg{position:absolute;inset:-8%;background:center/cover;filter:blur(5vh) brightness(.45) saturate(1.3)}
+#nowc{position:relative;width:56vh;height:56vh;border-radius:1.6vh;background:#333 center/cover;box-shadow:0 5vh 12vh rgba(0,0,0,.7)}
+#nowt{position:relative;margin-top:2vh;font-family:Fraunces,Georgia,serif;font-weight:600;font-size:4.6vh;max-width:80vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#nowa{position:relative;font-size:2.2vh;color:var(--mute)}
+#nowb{position:relative;width:56vh;height:.7vh;border-radius:9px;background:rgba(255,255,255,.2)}#nowb i{display:block;height:100%;width:0;border-radius:9px;background:var(--cream)}
+#nowtm{position:relative;font-size:1.8vh;color:var(--mute)}
 #toast{position:fixed;left:50%;bottom:12vh;z-index:9;transform:translate(-50%,2vh);opacity:0;padding:1.4vh 3vh;border-radius:99px;font-size:1.9vh;font-weight:500;background:var(--cream);color:var(--bg);transition:all .4s var(--ease);pointer-events:none}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01s!important}}
@@ -82,8 +98,10 @@ body.play #player{display:block}
 <div id="mode"><span data-m="video">YouTube</span><span data-m="music">Música</span></div>
 <div id="menu"></div>
 <div id="main"><div id="ht"></div><div id="hs">Loading…</div><div id="rows"></div></div>
-<div id="hints"><span><b>A</b>Select</span><span><b>B</b>Menu</span><span><b>Y</b>Mode</span><span><b>X</b>Play/Pause</span><span><b>LB</b><b>RB</b>Prev/Next</span></div>
+<div id="hints"><span><b>A</b>Select</span><span><b>B</b>Menu</span><span><b>Y</b>Mode</span><span><b>X</b>Play/Pause</span><span><b>LB</b><b>RB</b>Prev/Next</span><span><b>R</b>Seek</span><span><b>⧉</b>Cover</span></div>
 <div id="sheet"></div>
+<div id="gate"><div class="gt">Sign in</div><div class="gs">Connect your Google account to continue</div><button class="sbtn f" id="gbtn">Sign in</button><div class="gh">Press A · a window opens to sign in (use mouse or keyboard there)</div></div>
+<div id="now"><div id="nowbg"></div><div id="nowc"></div><div id="nowt"></div><div id="nowa"></div><div id="nowb"><i></i></div><div id="nowtm"></div></div>
 <div id="np"><div id="npc"></div><div id="npi"><div id="npt"></div><div id="npa"></div><div id="npb"><i></i></div></div></div><div id="toast"></div>
 
 <script>
@@ -114,7 +132,7 @@ function art(i) {
 
 // ---------- Datos de cada modo ----------
 const T = {
-  music: { menu: ["Search", "Home", "Liked", "History", "Settings"], start: 1, rows: [["Loading…", ["…", "…", "…", "…", "…"]]] },
+  music: { menu: ["Search", "Home", "New releases", "Charts", "Library", "Liked", "History", "Settings"], start: 1, rows: [["Loading…", ["…", "…", "…", "…", "…"]]] },
   video: { menu: ["Search", "Home", "Subscriptions", "Watch later", "History", "Settings"], start: 1, rows: [["Loading…", ["…", "…", "…", "…", "…"]]] }
 };
 const NAME = { music: "YouTube Music", video: "YouTube" };
@@ -127,6 +145,13 @@ let r = 0, c = 0, mi = 0, si = 0, bgOn = 0, lastBg = "";
 let cur = "", paused = false;   // cur: qué sección estamos esperando de YouTube
 
 // ---------- Dibujar la pantalla ----------
+const isList = row => !!(row[1][0] && row[1][0].k == "l");   // canciones = lista vertical; lo demás = carrusel
+const li = o => '<div class="li"><div class="lc" style="background-image:' + esc(o.bg) + '"></div><div class="lt"><div class="nm">' + esc(o.t) + '</div><div class="sb">' + esc(o.s) + '</div></div></div>';
+function rowHtml(row, ri) {
+  const L = isList(row);
+  return '<div class="row ' + (L ? "lst" : "car") + '"><div class="lbl">' + esc(row[0]) + '</div>' +
+    (L ? '<div class="col">' + row[1].map(li).join("") + '</div>' : '<div class="track">' + row[1].map((n, i) => tile(n, ri * 5 + i)).join("") + '</div>') + '</div>';
+}
 const SEARCH_SVG = '<svg viewBox="0 0 24 24" style="height:2.4vh;display:block" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>';
 const esc = s => String(s).replace(/[&<>"']/g, ch => "&#" + ch.charCodeAt(0) + ";");
 function tile(n, i) {   // n puede ser texto (ejemplo) o {id, t, s, bg} (real)
@@ -139,10 +164,7 @@ function render() {
   document.querySelectorAll("#mode span").forEach(s => s.classList.toggle("on", s.dataset.m == mode));
   $("ht").textContent = d.menu[sec];
   $("menu").innerHTML = d.menu.map((n, i) => '<div class="bub" style="--i:' + i + '">' + (n == "Search" ? SEARCH_SVG : n) + '</div>').join("");
-  $("rows").innerHTML = d.rows.map((row, ri) =>
-    '<div class="row"><div class="lbl">' + esc(row[0]) + '</div><div class="track">' +
-    row[1].map((n, i) => tile(n, ri * 5 + i)).join("") +
-    '</div></div>').join("");
+  $("rows").innerHTML = d.rows.map((row, ri) => rowHtml(row, ri)).join("");
   r = 0; c = 0;
   refresh();
 }
@@ -163,13 +185,17 @@ function setBg(img) {
 function refresh() {
   document.querySelectorAll(".row").forEach((row, ri) => {
     row.classList.toggle("on", ri == r);
-    row.querySelectorAll(".tile").forEach((t, ti) => t.classList.toggle("f", zone == "main" && ri == r && ti == c));
-    if (ri == r) { row.querySelector(".track").style.setProperty("--off", Math.max(0, c - 3)); }
+    row.querySelectorAll(".tile, .li").forEach((t, ti) => t.classList.toggle("f", zone == "main" && ri == r && ti == c));
+    const tr = row.querySelector(".track"); if (ri == r && tr) { tr.style.setProperty("--off", Math.max(0, c - 3)); }
   });
-  $("rows").style.setProperty("--r", r);
+  const rowEl = document.querySelectorAll(".row")[r];
+  if (rowEl) {   // la pantalla baja sola siguiendo lo enfocado
+    const f = rowEl.querySelectorAll(".li")[c], vh = innerHeight / 100;
+    $("rows").style.transform = "translateY(-" + (f ? Math.max(rowEl.offsetTop, f.offsetTop - 14 * vh) : rowEl.offsetTop) + "px)";
+  }
   document.querySelectorAll(".bub").forEach((b, i) => b.classList.toggle("f", zone == "menu" && i == mi));
   ["s0", "s1", "s2"].forEach((id, i) => { const e = $(id); if (e) { e.classList.toggle("f", zone == "sheet" && i == si); } });
-  const f = document.querySelector(".row.on .tile.f .art") || document.querySelector(".row.on .tile .art");
+  const f = document.querySelector(".row.on .tile.f .art") || document.querySelector(".row.on .li.f .lc") || document.querySelector(".row.on .tile .art");
   if (f) { setBg(f.style.backgroundImage); }   // el fondo sigue a lo seleccionado
 }
 
@@ -217,7 +243,11 @@ function sheetOk() {
 
 // ---------- Control (teclado y gamepad usan lo mismo) ----------
 function press(a) {
+  if (zone == "gate") { if (a == "ok") { sendQ("login"); } return; }
+  if (a == "view") { toggleNow(); return; }
+  if (a == "sl" || a == "sr") { sendQ("mc|" + (a == "sl" ? "back" : "fwd")); return; }   // stick derecho: adelantar / atrasar
   if (a == "mtoggle" || a == "mnext" || a == "mprev") { sendQ("mc|" + a.slice(1)); return; }
+  if (zone == "now") { if (a == "ok") { sendQ("mc|toggle"); } else if (a == "back" || a == "menu") { toggleNow(); } return; }
   if (zone == "kb") {
     if (a == "left") { ki = Math.max(0, ki - 1); } else if (a == "right") { ki = Math.min(KB.length - 1, ki + 1); }
     else if (a == "up") { ki = Math.max(0, ki - 8); } else if (a == "down") { ki = Math.min(KB.length - 1, ki + 8); }
@@ -239,23 +269,25 @@ function press(a) {
     else if (a == "back" || a == "right" || a == "menu") { closeMenu(); }
     return refresh();
   }
-  const n = T[mode].rows[r][1].length;
-  if (a == "left") { if (c > 0) { c--; } else { openMenu(); } }
-  else if (a == "right") { c = Math.min(n - 1, c + 1); }
-  else if (a == "up") { r = Math.max(0, r - 1); c = Math.min(c, T[mode].rows[r][1].length - 1); }
-  else if (a == "down") { r = Math.min(T[mode].rows.length - 1, r + 1); c = Math.min(c, T[mode].rows[r][1].length - 1); }
-  else if (a == "ok") { const it = T[mode].rows[r][1][c]; if (typeof it == "string") { toast("Still loading…"); } else { play(it); } }
-  else if (a == "back" || a == "menu") { openMenu(); }
+  const rows = T[mode].rows, row = rows[r][1], lst = isList(rows[r]), n = row.length;
+  const land = (nr, up) => { r = nr; const nl = isList(rows[r]), len = rows[r][1].length; c = nl ? (up ? len - 1 : 0) : Math.min(c, len - 1); };
+  if (a == "left") { if (lst || c == 0) { openMenu(); } else { c--; } }
+  else if (a == "right") { if (!lst) { c = Math.min(n - 1, c + 1); } }
+  else if (a == "up") { if (lst && c > 0) { c--; } else if (r > 0) { land(r - 1, true); } }
+  else if (a == "down") { if (lst && c < n - 1) { c++; } else if (r < rows.length - 1) { land(r + 1, false); } }
+  else if (a == "ok") { const it = row[c]; if (typeof it == "string") { toast("Still loading…"); } else if (it.id) { play(it); } else if (it.bid) { drill(it); } }
+  else if (a == "back") { if (stack.length) { undrill(); return; } openMenu(); }
+  else if (a == "menu") { openMenu(); }
   refresh();
 }
 
-const KEYS = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down", Enter: "ok", Escape: "back", Backspace: "back", m: "mode", y: "mode", " ": "mtoggle", n: "mnext", p: "mprev" };
+const KEYS = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down", Enter: "ok", Escape: "back", Backspace: "back", m: "mode", y: "mode", v: "view", "[": "sl", "]": "sr", " ": "mtoggle", n: "mnext", p: "mprev" };
 document.addEventListener("keydown", e => {
   if (zone == "kb" && e.key.length == 1) { e.preventDefault(); kq += e.key; return drawKb(); }   // también puedes escribir con el teclado
   if (zone == "kb" && e.key == "Backspace") { e.preventDefault(); kq = kq.slice(0, -1); return drawKb(); }
   if (KEYS[e.key]) { e.preventDefault(); press(KEYS[e.key]); } });
 
-const DIRS = ["left", "right", "up", "down"];
+const DIRS = ["left", "right", "up", "down", "sl", "sr"];
 let held = {};
 function pad() {
   const g = [...(navigator.getGamepads ? navigator.getGamepads() : [])].find(x => x);
@@ -264,7 +296,7 @@ function pad() {
     const now = {
       left: b(14) || g.axes[0] < -.6, right: b(15) || g.axes[0] > .6,
       up: b(12) || g.axes[1] < -.6, down: b(13) || g.axes[1] > .6,
-      ok: b(0), back: b(1), mode: b(3), mtoggle: b(2), mprev: b(4), mnext: b(5), menu: b(8) || b(9)
+      ok: b(0), back: b(1), mode: b(3), mtoggle: b(2), mprev: b(4), mnext: b(5), view: b(8), menu: b(9), sl: g.axes[2] < -.6, sr: g.axes[2] > .6
     };
     const t = performance.now();
     for (const k in now) {
@@ -279,35 +311,60 @@ function pad() {
 // ---------- Datos reales y reproductor ----------
 // A qué pantalla de YouTube corresponde cada opción del menú
 const BROWSE = {
-  music: { "Home": "FEmusic_home", "Liked": "FEmusic_liked_videos", "History": "FEmusic_history" },
+  music: { "Home": "FEmusic_home", "New releases": "FEmusic_new_releases_albums", "Charts": "FEmusic_charts", "Library": "FEmusic_library_landing", "Liked": "FEmusic_liked_videos", "History": "FEmusic_history" },
   video: { "Home": "FEwhat_to_watch", "Subscriptions": "FEsubscriptions", "Watch later": "VLWL", "History": "FEhistory" }
 };
-let curQ = "", ki = 0, kq = "";
+let curQ = "", ki = 0, kq = "", stack = [], dImg = "", dTitle = "", lastM = null;
 const sendQ = m => { try { window.chrome.webview.postMessage(m); } catch (e) { } };
 function load() {
   const name = T[mode].menu[sec], id = (BROWSE[mode] || {})[name];
-  if (!id) { return; }
+  if (!id || !logged) { return; }
+  stack = [];
   cur = mode + "|" + id; curQ = "";
   sendQ("browse|" + mode + "|" + id + "|" + (name == "Subscriptions" ? "~" : name));   // "~" = una fila por canal
 }
 function onData(d) {
   if (d.key != cur) { return; }
   if (d.error || !d.rows.length) { toast(logged ? "Nothing found" : "Sign in from Settings to see your stuff"); return; }
-  T[mode].rows = d.rows.map(x => [x[0], x[1].map(i => ({ id: i.id, t: i.t, s: i.s, bg: "url('" + (i.img || "").replace(/['"()\s]/g, "") + "')" }))]);
+  T[mode].rows = d.rows.map(x => [x[0], x[1].map(i => ({ id: i.id, bid: i.bid, k: i.k, t: i.t, s: i.s, bg: "url('" + (i.img || (stack.length ? dImg : "")).replace(/['"()\s]/g, "") + "')" }))]);
   render();
   $("hs").textContent = curQ ? "Results for “" + curQ + "”" : NAME[mode];
-  if (curQ) { $("ht").textContent = "Search"; }
+  if (curQ) { $("ht").textContent = "Search"; } else if (stack.length) { $("ht").textContent = dTitle; }
+}
+function drill(it) {   // abre un álbum, playlist o artista
+  stack.push({ rows: T[mode].rows, r, c, ht: $("ht").textContent, hs: $("hs").textContent, img: dImg });
+  dImg = (it.bg || "").replace(/^url\('|'\)$/g, ""); dTitle = it.t; cur = mode + "|" + it.bid; curQ = "";
+  $("hs").textContent = "Loading…";
+  sendQ("browse|" + mode + "|" + it.bid + "|" + it.t.replace(/\|/g, ""));
+}
+function undrill() {
+  const s = stack.pop();
+  T[mode].rows = s.rows; cur = ""; dImg = s.img;
+  render(); r = s.r; c = s.c;
+  $("ht").textContent = s.ht; $("hs").textContent = s.hs;
+  refresh();
 }
 function play(o) {
   if (mode == "music") { sendQ("mplay|" + o.id); toast("Playing " + o.t); } else { sendQ("vplay|" + o.id); }
 }
-function onMusic(m) {   // la canción suena en segundo plano; aquí solo mostramos la barrita
-  if (!m.t) { return; }
+function onMusic(m) {   // la canción suena en segundo plano; aquí solo mostramos la barrita y la pantalla completa
+  if (!m.t && !m.ad) { return; }
+  lastM = m;
+  const big = (m.img || "").replace(/=w\d+-h\d+/, "=w800-h800").replace(/['"()\s]/g, "");
+  const tm = x => Math.floor(x / 60) + ":" + String(Math.floor(x % 60)).padStart(2, "0");
+  const pct = (m.dur ? Math.min(100, m.pos / m.dur * 100) : 0) + "%";
+  const ttl = m.ad ? "Advertisement" : m.t, sub = m.ad ? (m.sk ? "Press X to skip ad" : "Ad playing…") : m.a;
   $("np").classList.add("on");
-  $("npt").textContent = (m.p ? "▶ " : "❚❚ ") + m.t;
-  $("npa").textContent = m.a;
-  $("npc").style.backgroundImage = "url('" + (m.img || "").replace(/=w\d+-h\d+/, "=w600-h600").replace(/['"()\s]/g, "") + "')";
-  $("npb").firstChild.style.width = (m.dur ? Math.min(100, m.pos / m.dur * 100) : 0) + "%";
+  $("npt").textContent = (m.p ? "▶ " : "❚❚ ") + ttl; $("npa").textContent = sub;
+  $("npc").style.backgroundImage = "url('" + big + "')";
+  $("npb").firstChild.style.width = pct;
+  $("nowbg").style.backgroundImage = $("nowc").style.backgroundImage = "url('" + big + "')";
+  $("nowt").textContent = ttl; $("nowa").textContent = sub;
+  $("nowb").firstChild.style.width = pct; $("nowtm").textContent = tm(m.pos) + " / " + tm(m.dur);
+}
+function toggleNow() {   // botón View: carátula a pantalla completa
+  if (zone == "now") { zone = "main"; document.body.classList.remove("now"); }
+  else if (zone == "main" && $("np").classList.contains("on")) { zone = "now"; document.body.classList.add("now"); }
 }
 
 // Teclado en pantalla
@@ -327,13 +384,20 @@ function kbOk() {
 function kbGo() {
   const q = kq.trim().replace(/\|/g, "");
   if (!q) { return; }
-  closeSheet(); curQ = q; cur = mode + "|" + q;
+  closeSheet(); stack = []; curQ = q; cur = mode + "|" + q;
   $("hs").textContent = "Searching…";
   sendQ("search|" + mode + "|" + q);
 }
 
 // ---------- Cuenta (habla con la app de Windows) ----------
-let logged = false;   // ¿hay sesión iniciada?
+function gateUpdate() {   // sin sesión no se puede usar nada: pantalla de inicio de sesión
+  const g = !logged && ready;
+  document.body.classList.toggle("gate", g);
+  if (g) { document.body.classList.remove("sheet", "menu", "now"); zone = "gate"; }
+  else if (zone == "gate") { zone = "main"; }
+}
+$("gbtn").onclick = () => sendQ("login");
+let logged = false, ready = false;   // ¿hay sesión iniciada?
 function send(m) {
   try { window.chrome.webview.postMessage(m); }
   catch (e) { toast("This only works inside the app"); }
@@ -342,8 +406,8 @@ try {
   window.chrome.webview.addEventListener("message", e => {
     if (typeof e.data == "string" && e.data.startsWith("music:")) { return onMusic(JSON.parse(e.data.slice(6))); }
     if (typeof e.data == "string" && e.data.startsWith("data:")) { return onData(JSON.parse(e.data.slice(5))); }
-    if (e.data == "login:ok") { if (!logged) { toast("Account connected"); load(); } logged = true; }
-    else if (e.data == "login:no") { logged = false; }
+    if (e.data == "login:ok") { const was = logged, rd = ready; logged = true; ready = true; gateUpdate(); if (!was) { if (rd) { toast("Account connected"); } load(); } }
+    else if (e.data == "login:no") { logged = false; ready = true; gateUpdate(); }
     const b = $("s1");
     if (b) { b.textContent = logged ? "Sign out" : "Sign in"; }
   });
