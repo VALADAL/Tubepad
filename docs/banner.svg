@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-labelledby="title desc">
+  <title id="title">Tubepad banner</title>
+  <desc id="desc">Dark premium banner for Tubepad, a YouTube-focused app, with a glowing red play icon, wordmark, and stylized media player panel.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#08090b"/>
+      <stop offset=".55" stop-color="#111216"/>
+      <stop offset="1" stop-color="#050608"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff4545"/>
+      <stop offset=".48" stop-color="#ff171f"/>
+      <stop offset="1" stop-color="#a9000a"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".14"/>
+      <stop offset=".45" stop-color="#b9c2d0" stop-opacity=".025"/>
+      <stop offset="1" stop-color="#ff202a" stop-opacity=".12"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#32191e"/>
+      <stop offset=".55" stop-color="#170e12"/>
+      <stop offset="1" stop-color="#090a0d"/>
+    </linearGradient>
+    <radialGradient id="redGlow">
+      <stop offset="0" stop-color="#ff171f" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#ff171f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ambient">
+      <stop offset="0" stop-color="#4b515d" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#0a0b0e" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur18" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+    <filter id="blur5" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity=".7"/>
+    </filter>
+    <clipPath id="screenClip">
+      <rect x="1010" y="66" width="224" height="132" rx="12"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="320" fill="url(#bg)"/>
+  <ellipse cx="335" cy="160" rx="340" ry="205" fill="url(#redGlow)"/>
+  <ellipse cx="1040" cy="170" rx="310" ry="230" fill="url(#ambient)"/>
+  <path d="M0 48 L235 0 H315 L0 102 Z" fill="#ffffff" opacity=".018"/>
+  <path d="M0 0 H280 L0 88 Z" fill="#000" opacity=".28"/>
+  <path d="M0 286 L160 210 L195 320 H0 Z" fill="#15171c" opacity=".65"/>
+  <path d="M0 287 L159 211" stroke="#ff2630" stroke-opacity=".65" stroke-width="1.4"/>
+  <path d="M0 293 L159 217" stroke="#ff2630" stroke-opacity=".22" stroke-width="8" filter="url(#blur5)"/>
+  <path d="M1040 320 L1160 258 L1280 300 V320 Z" fill="#17191e" opacity=".65"/>
+  <path d="M1040 320 L1160 258 L1280 300" fill="none" stroke="#ff2933" stroke-opacity=".8" stroke-width="1.4"/>
+  <path d="M1040 320 L1160 258 L1280 300" fill="none" stroke="#ff2933" stroke-opacity=".3" stroke-width="8" filter="url(#blur5)"/>
+
+  <!-- Glass play badge -->
+  <g filter="url(#shadow)">
+    <rect x="92" y="91" width="132" height="132" rx="30" fill="#ff1721" opacity=".25" filter="url(#blur18)"/>
+    <rect x="103" y="83" width="124" height="124" rx="27" fill="url(#glass)" stroke="#f2f4f8" stroke-opacity=".65" stroke-width="1.5"/>
+    <rect x="110" y="90" width="110" height="110" rx="22" fill="url(#red)" stroke="#ff7a80" stroke-opacity=".65" stroke-width="1"/>
+    <path d="M125 101 Q164 89 204 105" fill="none" stroke="#fff" stroke-opacity=".2" stroke-width="2"/>
+    <path d="M149 119 Q147 115 147 125 V166 Q147 172 153 168 L185 149 Q190 146 184 142 Z" fill="#fff" opacity=".98"/>
+    <rect x="103" y="83" width="124" height="124" rx="27" fill="none" stroke="#ff363f" stroke-width="3" stroke-opacity=".5" filter="url(#blur5)"/>
+  </g>
+
+  <!-- Wordmark -->
+  <g font-family="Inter, Arial, Helvetica, sans-serif" font-weight="750" letter-spacing="-2.6">
+    <text x="264" y="151" font-size="69" fill="#f7f7f8">Tube</text>
+    <text x="418" y="151" font-size="69" fill="#ff3039">pad</text>
+  </g>
+  <text x="268" y="181" font-family="Inter, Arial, Helvetica, sans-serif" font-size="12" font-weight="500" letter-spacing="2.5" fill="#c9cbd0">YOUTUBE <tspan fill="#ff3039" font-weight="700">AND</tspan> YOUTUBE MUSIC</text>
+  <text x="268" y="203" font-family="Inter, Arial, Helvetica, sans-serif" font-size="12" font-weight="600" letter-spacing="3.1" fill="#c9cbd0"><tspan fill="#ff3039">IN 1 APP</tspan><tspan> FOR TV</tspan></text>
+  <rect x="268" y="216" width="46" height="3.5" rx="1.75" fill="#ff3039"/>
+  <rect x="268" y="216" width="46" height="3.5" rx="1.75" fill="#ff3039" opacity=".6" filter="url(#blur5)"/>
+
+  <!-- Subtle floating glass geometry -->
+  <path d="M0 0 H145 L0 43 Z" fill="#1c1e23" opacity=".55"/>
+  <path d="M0 43 L145 0" stroke="#aeb4c0" stroke-opacity=".15" stroke-width="1"/>
+  <path d="M30 0 L0 9" stroke="#ff313a" stroke-opacity=".7" stroke-width="2"/>
+  <path d="M818 0 L1005 0 L900 23 Z" fill="#ffffff" opacity=".018"/>
+
+  <!-- Angled media-player glass panel -->
+  <g transform="rotate(-7 1115 147)" filter="url(#shadow)">
+    <rect x="970" y="32" width="275" height="238" rx="23" fill="url(#glass)" stroke="#aab3c2" stroke-opacity=".65" stroke-width="1.3"/>
+    <rect x="978" y="40" width="259" height="222" rx="17" fill="#08090c" fill-opacity=".91" stroke="#ffffff" stroke-opacity=".06"/>
+    <rect x="991" y="51" width="24" height="18" rx="5" fill="#ff202a"/>
+    <path d="M1000 55 L1000 65 L1008 60 Z" fill="#fff"/>
+    <rect x="1026" y="56" width="26" height="3" rx="1.5" fill="#a7abb3"/>
+    <rect x="1026" y="63" width="19" height="3" rx="1.5" fill="#777d87"/>
+    <g clip-path="url(#screenClip)">
+      <rect x="1010" y="66" width="224" height="132" rx="12" fill="url(#screen)"/>
+      <path d="M1005 176 L1050 125 L1081 151 L1120 105 L1165 149 L1218 96 L1244 120 V202 H1005 Z" fill="#3a151b"/>
+      <path d="M1005 183 L1052 144 L1081 163 L1124 120 L1164 156 L1217 111 L1244 130 V202 H1005 Z" fill="#201015"/>
+      <path d="M1005 190 L1050 170 L1091 177 L1135 145 L1181 173 L1244 146 V202 H1005 Z" fill="#0c0d11"/>
+      <path d="M1010 177 L1050 151 L1081 163 L1124 120 L1164 156 L1217 111 L1244 130" fill="none" stroke="#ff333d" stroke-opacity=".72" stroke-width="1.4"/>
+      <circle cx="1179" cy="99" r="38" fill="url(#redGlow)" opacity=".65"/>
+    </g>
+    <rect x="1000" y="207" width="213" height="3" rx="1.5" fill="#33363d"/>
+    <rect x="1000" y="207" width="108" height="3" rx="1.5" fill="#ff2933"/>
+    <circle cx="1108" cy="208.5" r="4.5" fill="#fff" stroke="#ff3039" stroke-width="2"/>
+    <path d="M1002 224 L1002 235 L1011 229.5 Z" fill="#e7e9ed"/>
+    <path d="M1025 226 Q1031 220 1037 226 L1037 234 Q1031 228 1025 234 Z" fill="#b9bec7"/>
+    <path d="M1042 226 L1042 234" stroke="#b9bec7" stroke-width="2"/>
+    <rect x="1061" y="225" width="90" height="4" rx="2" fill="#34373e"/>
+    <rect x="1061" y="234" width="63" height="4" rx="2" fill="#292c32"/>
+    <circle cx="1195" cy="230" r="2" fill="#8d929b"/>
+    <circle cx="1203" cy="230" r="2" fill="#8d929b"/>
+    <circle cx="1211" cy="230" r="2" fill="#8d929b"/>
+    <path d="M978 80 L978 56 Q978 40 994 40 H1032" fill="none" stroke="#fff" stroke-opacity=".2" stroke-width="1.2"/>
+  </g>
+
+  <!-- Tiny red glints -->
+  <circle cx="950" cy="55" r="2" fill="#ff343d" opacity=".8"/>
+  <circle cx="950" cy="55" r="8" fill="#ff343d" opacity=".18" filter="url(#blur5)"/>
+  <path d="M842 263 L900 263" stroke="#ffffff" stroke-opacity=".08" stroke-width="1"/>
+  <path d="M866 268 L914 268" stroke="#ff3039" stroke-opacity=".25" stroke-width="1"/>
+</svg>
