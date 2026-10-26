@@ -374,6 +374,7 @@ function onData(d) {
   if (d.error || !d.rows.length) { endSplash(true); toast(logged ? "Nothing found" : "Sign in from Settings to see your stuff"); return; }
   const CAR_ROWS = ["Quick picks"], LIST_ROWS = ["Music videos"];   // CAR_ROWS: se ven como carrusel aunque YouTube las mande como lista   // filas que se ven como lista de canciones
   const newRows = d.rows.map(x => [x[0], x[1].map(i => ({ id: i.id, bid: i.bid, k: LIST_ROWS.includes(x[0]) ? "l" : CAR_ROWS.includes(x[0]) ? "c" : i.k, t: i.t, s: i.s, bg: "url('" + (i.img || (stack.length ? dImg : "")).replace(/=w\d+-h\d+[^'"()\s]*/, "=w544-h544-l90-rj").replace(/=s\d+-c[^'"()\s]*/, "=s400-c-k-c0x00ffffff-no-rj").replace(/['"()\s]/g, "") + "')" }))]);
+  if (mode == "music" && !stack.length && !curQ) { const qi = newRows.findIndex(x => x[0] == "Quick picks"); if (qi > 0) { newRows.unshift(newRows.splice(qi, 1)[0]); } }   // Quick picks siempre arriba
   const plain = !stack.length && !curQ, same = plain && shownKey == d.key, pr = r, pc = c;
   if (same && JSON.stringify(cache[d.key]) == JSON.stringify(newRows)) { endSplash(true); return; }   // nada cambió
   T[mode].rows = newRows;
