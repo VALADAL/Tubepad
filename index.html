@@ -107,6 +107,10 @@ body.splash #splash{opacity:1;visibility:visible}
 .spb{width:26vh;height:.6vh;border-radius:9px;background:rgba(255,255,255,.15);overflow:hidden}
 .spb i{display:block;width:40%;height:100%;border-radius:9px;background:var(--cream);animation:sb 1.3s var(--ease) infinite}
 @keyframes sb{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+#vload{position:fixed;inset:0;z-index:25;display:none;flex-direction:column;align-items:center;justify-content:center;gap:3vh;background:rgba(14,11,9,.72);-webkit-backdrop-filter:blur(2.4vh);backdrop-filter:blur(2.4vh)}
+body.vload #vload{display:flex;animation:vin .4s var(--ease)}
+@keyframes vin{from{opacity:0}}
+.vt{font-weight:700;font-size:4.2vh}
 </style>
 </head>
 <body class="splash">
@@ -121,6 +125,7 @@ body.splash #splash{opacity:1;visibility:visible}
 <div id="kbh"><div class="kh" style="--i:0"><b>A</b>Type</div><div class="kh" style="--i:1"><b>X</b>Delete</div><div class="kh" style="--i:2"><b>Y</b>Space</div><div class="kh" style="--i:3"><b>☰</b>Go</div><div class="kh" style="--i:4"><b>B</b>Close</div><div class="kh" style="--i:5"><b>⧉</b>Hide</div></div>
 <div id="gate"><div class="gt">Sign in</div><div class="gs">Connect your Google account to continue</div><button class="sbtn f" id="gbtn">Sign in</button><div class="gh">Press A · a window opens to sign in (use mouse or keyboard there)</div></div>
 <div id="np"><div id="npc"></div><div id="npi"><div id="npt"></div><div id="npa"></div><div id="npb"><i></i></div><div id="nptm"></div></div></div><div id="toast"></div>
+<div id="vload"><div class="vt">Loading video…</div><div class="spb"><i></i></div><div class="gh">B to cancel</div></div>
 <div id="splash"><svg viewBox="0 0 100 70"><rect width="100" height="70" rx="20" fill="#ff0000"/><path d="M40 20L68 35L40 50Z" fill="#fff"/></svg><div class="spt">YouTube</div><div class="spb"><i></i></div></div></div>
 
 <script>
@@ -277,6 +282,7 @@ function sheetOk() {
 // ---------- Control (teclado y gamepad usan lo mismo) ----------
 function press(a) {
   if (document.body.classList.contains("splash")) { return; }   // mientras carga no se mueve nada
+  if (document.body.classList.contains("vload")) { if (a == "back") { document.body.classList.remove("vload"); sendQ("vclose"); } return; }   // cargando un video
   if (zone == "gate") { if (a == "ok") { sendQ("login"); } return; }
   if (zone == "kb") { return kbPress(a); }   // en el teclado los botones son solo del teclado
   if (a == "menu") { toggleHints(); return; }   // botón Menu: muestra los controles un momento
@@ -318,7 +324,8 @@ document.addEventListener("keydown", e => {
   if (KEYS[e.key]) { e.preventDefault(); press(KEYS[e.key]); } });
 
 const DIRS = ["left", "right", "up", "down", "sl", "sr"];
-let held = {};
+let held = {}, padBlock = false;
+addEventListener("focus", () => { padBlock = true; });
 function pad() {
   const g = [...(navigator.getGamepads ? navigator.getGamepads() : [])].find(x => x);
   if (g) {
@@ -328,6 +335,7 @@ function pad() {
       up: b(12) || g.axes[1] < -.6, down: b(13) || g.axes[1] > .6,
       ok: b(0), back: b(1), mode: b(3), mtoggle: b(2), mprev: b(4), mnext: b(5), view: b(8), menu: b(9), sl: g.axes[2] < -.6, sr: g.axes[2] > .6
     };
+    if (padBlock) { if (Object.values(now).some(Boolean)) { requestAnimationFrame(pad); return; } padBlock = false; held = {}; }   // espera a soltar los botones
     const t = performance.now();
     for (const k in now) {
       if (!now[k]) { held[k] = 0; }
@@ -387,7 +395,7 @@ function undrill() {
   refresh();
 }
 function play(o) {
-  if (mode == "music") { sendQ("mplay|" + o.id); toast("Playing " + o.t); } else { sendQ("vplay|" + o.id); }
+  if (mode == "music") { sendQ("mplay|" + o.id); toast("Playing " + o.t); } else { document.body.classList.add("vload"); sendQ("vplay|" + o.id); }
 }
 function onMusic(m) {   // la canción suena en segundo plano; aquí solo mostramos la barrita y la pantalla completa
   if (!m.t && !m.ad) { return; }
@@ -459,6 +467,7 @@ function send(m) {
 }
 try {
   window.chrome.webview.addEventListener("message", e => {
+    if (e.data == "video:ready" || e.data == "video:closed") { document.body.classList.remove("vload"); padBlock = true; return; }
     if (typeof e.data == "string" && e.data.startsWith("music:")) { return onMusic(JSON.parse(e.data.slice(6))); }
     if (typeof e.data == "string" && e.data.startsWith("data:")) { return onData(JSON.parse(e.data.slice(5))); }
     if (e.data == "login:ok") { const was = logged, rd = ready; logged = true; ready = true; gateUpdate(); if (!was) { if (rd) { toast("Account connected"); } load(); } }
