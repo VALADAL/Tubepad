@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YTConsole</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#16110e;--cream:#f1e8dc;--mute:#a8998a;--ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.34,1.4,.64,1);--tw:22vh;--th:22vh;--gap:2vh}
+body.video{--tw:37vh;--th:20.8vh}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--cream);font-family:"DM Sans","Segoe UI",system-ui,sans-serif}
+.bg{position:fixed;inset:-8%;background-size:cover;background-position:center;filter:blur(3.4vh) saturate(1.3) brightness(.55);opacity:0;transition:opacity .9s}
+.bg.on{opacity:1}
+#shade{position:fixed;inset:0;background:linear-gradient(90deg,rgba(22,17,14,.88),rgba(22,17,14,.2) 70%),linear-gradient(0deg,#16110e 6%,rgba(22,17,14,0) 40%)}
+
+/* Menú de burbujas (sale por la izquierda) */
+#menu{position:fixed;left:3vw;top:50%;transform:translateY(-50%);z-index:5;display:flex;flex-direction:column;gap:1.4vh;pointer-events:none}
+.bub{width:fit-content;padding:1.5vh 3vh;border-radius:99px;font-size:2.1vh;font-weight:500;background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(2.4vh);backdrop-filter:blur(2.4vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.2);opacity:0;transform:translateX(-14vh) scale(.8);transition:opacity .3s,transform .5s var(--spring),background .3s,color .3s}
+body.menu .bub{opacity:1;transform:none;transition-delay:calc(var(--i) * 60ms)}
+body.menu .bub.f{background:var(--cream);color:var(--bg);transform:translateX(1.6vh) scale(1.06)}
+
+/* Contenido */
+#main{position:fixed;left:7vw;right:0;top:9vh;bottom:0;transition:opacity .5s,filter .5s,transform .6s var(--ease)}
+body.menu #main,body.sheet #main{opacity:.25;filter:blur(.8vh)}
+body.menu #main{transform:translateX(3vh)}
+#ht{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:8.4vh;line-height:1;letter-spacing:-.02em}
+#hs{margin-top:1.2vh;font-size:2.1vh;color:var(--mute)}
+#rows{position:absolute;left:0;right:0;top:20vh;transition:transform .6s var(--ease);transform:translateY(calc(var(--r,0) * -40vh))}
+.row{height:40vh;opacity:.35;transition:opacity .5s}
+.row.on{opacity:1}
+.lbl{font-family:Fraunces,Georgia,serif;font-size:3vh;margin-bottom:2vh}
+.track{display:flex;gap:var(--gap);transition:transform .55s var(--ease);transform:translateX(calc(var(--off,0) * (var(--tw) + var(--gap)) * -1))}
+.tile{flex:none;width:var(--tw)}
+.art{width:var(--tw);height:var(--th);border-radius:.6vh;background:center/cover;transition:transform .5s var(--spring),box-shadow .4s}
+.tile.f .art{transform:scale(1.07);box-shadow:0 0 0 .4vh var(--cream),0 3vh 7vh rgba(0,0,0,.6)}
+.nm{margin-top:1.4vh;font-size:2vh;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb{font-size:1.7vh;color:var(--mute)}
+.tile.f .nm,.tile.f .sb{transform:translateY(1vh)}
+.nm,.sb{transition:transform .35s var(--ease)}
+
+/* Selector de modo */
+#mode{position:fixed;top:4vh;right:5vw;z-index:4;display:flex;border-radius:99px;overflow:hidden;font-size:1.9vh;font-weight:500;background:rgba(0,0,0,.25);-webkit-backdrop-filter:blur(2vh);backdrop-filter:blur(2vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.3)}
+#mode span{padding:1vh 2.4vh;color:var(--mute);transition:background .3s,color .3s}
+#mode span.on{background:var(--cream);color:var(--bg)}
+
+/* Controles: abajo a la derecha, sin tapar el contenido */
+#hints{position:fixed;right:3vw;bottom:3vh;z-index:6;display:flex;gap:2.2vh;padding:1.1vh 2vh;border-radius:99px;font-size:1.6vh;font-weight:500;background:rgba(14,11,9,.6);-webkit-backdrop-filter:blur(2.4vh);backdrop-filter:blur(2.4vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.18)}
+#hints b{display:inline-grid;place-items:center;width:2.6vh;height:2.6vh;margin-right:.7vh;border-radius:50%;background:rgba(255,255,255,.2);font-size:1.4vh;font-weight:500}
+
+/* Ajustes */
+#sheet{position:fixed;z-index:8;left:50%;top:50%;width:min(60vw,90vh);padding:4vh 4.4vh;border-radius:2.4vh;background:rgba(22,17,14,.78);-webkit-backdrop-filter:blur(3vh);backdrop-filter:blur(3vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.2),0 4vh 10vh rgba(0,0,0,.6);opacity:0;visibility:hidden;transform:translate(-50%,-46%) scale(.94);transition:opacity .35s,visibility .35s,transform .6s var(--spring)}
+body.sheet #sheet{opacity:1;visibility:visible;transform:translate(-50%,-50%)}
+#sheet h2{font-family:Fraunces,Georgia,serif;font-size:4.4vh;font-weight:600;margin-bottom:3vh}
+.srow{display:flex;justify-content:space-between;align-items:center;margin-bottom:2.2vh;font-size:2.1vh}
+.sbtn{font:500 2vh "DM Sans",sans-serif;color:var(--cream);background:rgba(255,255,255,.1);border:0;border-radius:99px;padding:1.2vh 3vh;cursor:pointer;box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.2);transition:background .25s,color .25s,transform .4s var(--spring)}
+.sbtn.f{background:var(--cream);color:var(--bg);transform:scale(1.06)}
+.sbtn.danger{color:#F0997B}
+.sbtn.danger.f{background:#F0997B;color:var(--bg)}
+#toast{position:fixed;left:50%;bottom:12vh;z-index:9;transform:translate(-50%,2vh);opacity:0;padding:1.4vh 3vh;border-radius:99px;font-size:1.9vh;font-weight:500;background:var(--cream);color:var(--bg);transition:all .4s var(--ease);pointer-events:none}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+
+<div class="bg" id="bgA"></div><div class="bg" id="bgB"></div><div id="shade"></div>
+
+<div id="mode"><span data-m="video">YouTube</span><span data-m="music">Música</span></div>
+<div id="menu"></div>
+<div id="main"><div id="ht"></div><div id="hs">Datos de ejemplo. Aquí aparecerá lo tuyo cuando conectemos tu cuenta.</div><div id="rows"></div></div>
+<div id="hints"><span><b>A</b>Elegir</span><span><b>B</b>Menú</span><span><b>Y</b>Modo</span></div>
+<div id="sheet"></div>
+<div id="toast"></div>
+
+<script>
+// ---------- Utilidades ----------
+const $ = id => document.getElementById(id);
+const store = {   // prefijo "yt_" para no chocar con otras apps
+  get: k => localStorage.getItem("yt_" + k),
+  set: (k, v) => localStorage.setItem("yt_" + k, v)
+};
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => t.classList.remove("show"), 2600);
+}
+
+// ---------- Carátulas de ejemplo (después serán las reales) ----------
+const PAL = [["#b5532e","#f1e8dc"],["#7a5c3e","#d9a86c"],["#3d4a52","#9fb4bf"],["#5b2a3c","#e07a8f"],["#2f4a3a","#9ccf9c"],["#4a3a6b","#b9a6ff"],["#8a6a1f","#ffd36b"],["#1f3f5c","#6fb5ff"]];
+function art(i) {
+  const p = PAL[i % PAL.length], k = i % 3;
+  let s = '<rect width="200" height="200" fill="' + p[0] + '"/>';
+  if (k == 0) { s += '<circle cx="100" cy="100" r="58" fill="' + p[1] + '" opacity=".85"/>'; }
+  else if (k == 1) { s += '<path d="M0 200L200 40V200Z" fill="' + p[1] + '" opacity=".8"/>'; }
+  else { s += '<rect x="30" y="30" width="30" height="140" fill="' + p[1] + '"/><rect x="85" y="60" width="30" height="110" fill="' + p[1] + '" opacity=".7"/><rect x="140" y="90" width="30" height="80" fill="' + p[1] + '" opacity=".5"/>'; }
+  return 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">' + s + '</svg>') + '")';
+}
+
+// ---------- Datos de cada modo ----------
+const T = {
+  music: {
+    menu: ["Buscar", "Inicio", "Para ti", "Biblioteca", "Historial", "Ajustes"], start: 2,
+    rows: [
+      ["Mixes para ti", ["Mix descubrir", "Tus likes", "Nuevos lanzamientos", "Mix de la semana", "Tu mix", "Radio del día"]],
+      ["Escúchalo otra vez", ["Disco uno", "Disco dos", "Disco tres", "Disco cuatro", "Disco cinco", "Disco seis"]]
+    ]
+  },
+  video: {
+    menu: ["Buscar", "Inicio", "Suscripciones", "Biblioteca", "Historial", "Ajustes"], start: 1,
+    rows: [
+      ["Recomendados", ["Video uno", "Video dos", "Video tres", "Video cuatro", "Video cinco"]],
+      ["De tus suscripciones", ["Canal uno", "Canal dos", "Canal tres", "Canal cuatro", "Canal cinco"]]
+    ]
+  }
+};
+const NAME = { music: "YouTube Music", video: "YouTube" };
+
+// ---------- Estado ----------
+let start = store.get("start") || "music";   // en qué modo inicia la app
+let mode = start, sec = T[mode].start;
+let zone = "main";   // "main", "menu" o "sheet"
+let r = 0, c = 0, mi = 0, si = 0, bgOn = 0, lastBg = "";
+
+// ---------- Dibujar la pantalla ----------
+function render() {
+  const d = T[mode];
+  document.body.classList.toggle("video", mode == "video");
+  document.querySelectorAll("#mode span").forEach(s => s.classList.toggle("on", s.dataset.m == mode));
+  $("ht").textContent = d.menu[sec];
+  $("menu").innerHTML = d.menu.map((n, i) => '<div class="bub" style="--i:' + i + '">' + n + '</div>').join("");
+  $("rows").innerHTML = d.rows.map((row, ri) =>
+    '<div class="row"><div class="lbl">' + row[0] + '</div><div class="track">' +
+    row[1].map((n, i) => '<div class="tile"><div class="art" style="background-image:' + art(ri * 5 + i + (mode == "video" ? 3 : 0)) + '"></div><div class="nm">' + n + '</div><div class="sb">Ejemplo</div></div>').join("") +
+    '</div></div>').join("");
+  r = 0; c = 0;
+  refresh();
+}
+
+// Pone el fondo difuminado con la carátula (cruza entre dos capas para que sea suave)
+function setBg(img) {
+  if (!img || img == lastBg) { return; }
+  lastBg = img;
+  const a = $("bgA"), b = $("bgB");
+  const next = bgOn ? a : b, old = bgOn ? b : a;
+  next.style.backgroundImage = img;
+  next.classList.add("on");
+  old.classList.remove("on");
+  bgOn = 1 - bgOn;
+}
+
+// Actualiza qué elemento está enfocado
+function refresh() {
+  document.querySelectorAll(".row").forEach((row, ri) => {
+    row.classList.toggle("on", ri == r);
+    row.querySelectorAll(".tile").forEach((t, ti) => t.classList.toggle("f", zone == "main" && ri == r && ti == c));
+    if (ri == r) { row.querySelector(".track").style.setProperty("--off", Math.max(0, c - 3)); }
+  });
+  $("rows").style.setProperty("--r", r);
+  document.querySelectorAll(".bub").forEach((b, i) => b.classList.toggle("f", zone == "menu" && i == mi));
+  ["s0", "s1", "s2"].forEach((id, i) => { const e = $(id); if (e) { e.classList.toggle("f", zone == "sheet" && i == si); } });
+  const f = document.querySelector(".row.on .tile.f .art") || document.querySelector(".row.on .tile .art");
+  if (f) { setBg(f.style.backgroundImage); }   // el fondo sigue a lo seleccionado
+}
+
+// ---------- Menú, modo y ajustes ----------
+function openMenu() { zone = "menu"; mi = sec; document.body.classList.add("menu"); }
+function closeMenu() { zone = "main"; document.body.classList.remove("menu"); }
+function setMode(m) {
+  mode = m; sec = T[m].start;
+  closeMenu();
+  render();
+  toast(NAME[m]);
+}
+function pick(i) {
+  if (T[mode].menu[i] == "Ajustes") { closeMenu(); openSheet(); return; }
+  sec = i;
+  $("ht").textContent = T[mode].menu[i];
+  closeMenu();
+  r = 0; c = 0;
+}
+function openSheet() {
+  zone = "sheet"; si = 0;
+  $("sheet").innerHTML =
+    '<h2>Ajustes</h2>' +
+    '<div class="srow"><span>Iniciar en</span><button class="sbtn" id="s0">' + NAME[start] + '</button></div>' +
+    '<div class="srow"><span>Tu cuenta</span><button class="sbtn" id="s1">Cerrar sesión</button></div>' +
+    '<div class="srow" style="justify-content:flex-end"><button class="sbtn danger" id="s2">Cerrar app</button></div>';
+  ["s0", "s1", "s2"].forEach((id, i) => { $(id).onclick = () => { si = i; sheetOk(); }; });
+  document.body.classList.add("sheet");
+}
+function closeSheet() { zone = "main"; document.body.classList.remove("sheet"); }
+function sheetOk() {
+  if (si == 0) {
+    start = start == "music" ? "video" : "music";
+    store.set("start", start);
+    $("s0").textContent = NAME[start];
+    toast("Iniciará en " + NAME[start]);
+  } else if (si == 1) {
+    toast("Se activa cuando conectemos tu cuenta");
+  } else {
+    try { window.chrome.webview.postMessage("quit"); } catch (e) { window.close(); }   // C# cierra la ventana
+  }
+}
+
+// ---------- Control (teclado y gamepad usan lo mismo) ----------
+function press(a) {
+  if (zone == "sheet") {
+    if (a == "up") { si = Math.max(0, si - 1); }
+    else if (a == "down") { si = Math.min(2, si + 1); }
+    else if (a == "ok") { sheetOk(); }
+    else if (a == "back" || a == "menu") { closeSheet(); }
+    return refresh();
+  }
+  if (a == "mode") { return setMode(mode == "music" ? "video" : "music"); }
+  if (zone == "menu") {
+    if (a == "up") { mi = Math.max(0, mi - 1); }
+    else if (a == "down") { mi = Math.min(T[mode].menu.length - 1, mi + 1); }
+    else if (a == "ok") { pick(mi); }
+    else if (a == "back" || a == "right" || a == "menu") { closeMenu(); }
+    return refresh();
+  }
+  const n = T[mode].rows[r][1].length;
+  if (a == "left") { if (c > 0) { c--; } else { openMenu(); } }
+  else if (a == "right") { c = Math.min(n - 1, c + 1); }
+  else if (a == "up") { r = Math.max(0, r - 1); c = Math.min(c, T[mode].rows[r][1].length - 1); }
+  else if (a == "down") { r = Math.min(T[mode].rows.length - 1, r + 1); c = Math.min(c, T[mode].rows[r][1].length - 1); }
+  else if (a == "ok") { toast("Aquí empezará a sonar en el paso 2"); }
+  else if (a == "back" || a == "menu") { openMenu(); }
+  refresh();
+}
+
+const KEYS = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down", Enter: "ok", Escape: "back", Backspace: "back", m: "mode", y: "mode" };
+document.addEventListener("keydown", e => { if (KEYS[e.key]) { e.preventDefault(); press(KEYS[e.key]); } });
+
+const DIRS = ["left", "right", "up", "down"];
+let held = {};
+function pad() {
+  const g = [...(navigator.getGamepads ? navigator.getGamepads() : [])].find(x => x);
+  if (g) {
+    const b = i => g.buttons[i] && g.buttons[i].pressed;
+    const now = {
+      left: b(14) || g.axes[0] < -.6, right: b(15) || g.axes[0] > .6,
+      up: b(12) || g.axes[1] < -.6, down: b(13) || g.axes[1] > .6,
+      ok: b(0), back: b(1), mode: b(3), menu: b(2) || b(8) || b(9)
+    };
+    const t = performance.now();
+    for (const k in now) {
+      if (!now[k]) { held[k] = 0; }
+      else if (!held[k]) { press(k); held[k] = t + 300; }                          // primera pulsación
+      else if (DIRS.includes(k) && t > held[k]) { press(k); held[k] = t + 150; }   // repetir si mantienes la dirección
+    }
+  }
+  requestAnimationFrame(pad);
+}
+
+render();
+pad();
+</script>
+</body>
+</html>
