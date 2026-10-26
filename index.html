@@ -98,6 +98,8 @@ body.gate #gate{display:flex}
 #gate .sbtn{font-size:2.6vh;padding:1.6vh 6vh}
 #toast{position:fixed;left:50%;bottom:12vh;z-index:9;transform:translate(-50%,2vh);opacity:0;padding:1.4vh 3vh;border-radius:99px;font-size:1.9vh;font-weight:500;background:var(--cream);color:var(--bg);transition:all .4s var(--ease);pointer-events:none}
 #toast.show{opacity:1;transform:translate(-50%,0)}
+/* Creadores: avatares redondos */
+.row.chs{--tw:var(--th)}.row.chs .art{border-radius:50%}.row.chs .nm,.row.chs .sb{text-align:center}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01s!important}}
 #splash{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3.4vh;background:radial-gradient(circle at 50% 42%,#2f2019,var(--bg) 72%);opacity:0;visibility:hidden;transition:opacity .7s,visibility .7s}
 body.splash #splash{opacity:1;visibility:visible}
@@ -157,7 +159,7 @@ function art(i) {
 // ---------- Datos de cada modo ----------
 const T = {
   music: { menu: ["Search", "Home", "New releases", "Charts", "Library", "History", "Settings"], start: 1, rows: [["Loading…", ["…", "…", "…", "…", "…"]]] },
-  video: { menu: ["Search", "Home", "Subscriptions", "Watch later", "History", "Settings"], start: 1, rows: [["Loading…", ["…", "…", "…", "…", "…"]]] }
+  video: { menu: ["Search", "Home", "Subscriptions", "Playlists", "Liked videos", "Watch later", "History", "Settings"], start: 1, rows: [["Loading…", ["…", "…", "…", "…", "…"]]] }
 };
 const NAME = { music: "YouTube Music", video: "YouTube" };
 
@@ -172,8 +174,8 @@ let cur = "", paused = false;   // cur: qué sección estamos esperando de YouTu
 const isList = row => !!(row[1][0] && row[1][0].k == "l");   // canciones = lista vertical; lo demás = carrusel
 const li = o => '<div class="li"><div class="lc" style="background-image:' + esc(o.bg) + '"></div><div class="lt"><div class="nm">' + esc(o.t) + '</div><div class="sb">' + esc(o.s) + '</div></div></div>';
 function rowHtml(row, ri) {
-  const L = isList(row);
-  return '<div class="row ' + (L ? "lst" : "car") + '"><div class="lbl">' + esc(row[0]) + '</div>' +
+  const L = isList(row), CH = !L && !!(row[1][0] && row[1][0].k == "ch");   // CH: fila de creadores
+  return '<div class="row ' + (L ? "lst" : "car") + (CH ? " chs" : "") + '"><div class="lbl">' + esc(row[0]) + '</div>' +
     (L ? '<div class="col">' + row[1].map(li).join("") + '</div>' : '<div class="track">' + row[1].map((n, i) => tile(n, ri * 5 + i)).join("") + '</div>') + '</div>';
 }
 const SEARCH_SVG = '<svg viewBox="0 0 24 24" style="height:2.4vh;display:block" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>';
@@ -210,7 +212,7 @@ function refresh() {
   document.querySelectorAll(".row").forEach((row, ri) => {
     row.classList.toggle("on", ri == r);
     row.querySelectorAll(".tile, .li").forEach((t, ti) => t.classList.toggle("f", zone == "main" && ri == r && ti == c));
-    const tr = row.querySelector(".track"); if (ri == r && tr) { tr.style.setProperty("--off", Math.max(0, c - 3)); }
+    const tr = row.querySelector(".track"); if (ri == r && tr) { tr.style.setProperty("--off", Math.max(0, c - (row.classList.contains("chs") ? 5 : 3))); }
   });
   const rowEl = document.querySelectorAll(".row")[r];
   if (rowEl) {   // la pantalla baja sola siguiendo lo enfocado
@@ -350,10 +352,10 @@ function pad() {
 // A qué pantalla de YouTube corresponde cada opción del menú
 const BROWSE = {
   music: { "Home": "FEmusic_home;FEmusic_charts", "New releases": "FEmusic_new_releases_albums;Music videos=FEmusic_new_releases_videos", "Charts": "FEmusic_charts", "Library": "Playlists=FEmusic_liked_playlists;Albums=FEmusic_liked_albums;Artists=FEmusic_library_corpus_artists;Songs=FEmusic_liked_videos;Podcasts=FEmusic_library_non_music_audio_list", "History": "FEmusic_history" },
-  video: { "Home": "FEwhat_to_watch", "Subscriptions": "FEsubscriptions", "Watch later": "VLWL", "History": "FEhistory" }
+  video: { "Home": "Recommended=FEwhat_to_watch#c", "Subscriptions": "Creators=FEchannels#m;FEsubscriptions#du", "Playlists": "FEplaylist_aggregation", "Liked videos": "VLLL", "Watch later": "VLWL", "History": "FEhistory" }
 };
 const cache = {}; let shownKey = "";
-let curQ = "", ki = 0, kq = "", stack = [], dImg = "", dTitle = "", lastM = null;
+let curQ = "", ki = 0, kq = "", stack = [], dImg = "", dTitle = "", dSub = "", lastM = null;
 const sendQ = m => { try { window.chrome.webview.postMessage(m); } catch (e) { } };
 function load() {
   const name = T[mode].menu[sec], id = (BROWSE[mode] || {})[name];
@@ -365,13 +367,13 @@ function load() {
   shownKey = hit ? cur : "";
   render();
   $("hs").textContent = hit ? NAME[mode] : "Loading…";
-  sendQ("browse|" + mode + "|" + id + "|" + (name == "Subscriptions" ? "~" : name));   // "~" = una fila por canal
+  sendQ("browse|" + mode + "|" + id + "|" + name);
 }
 function onData(d) {
   if (d.key != cur) { return; }
   if (d.error || !d.rows.length) { endSplash(true); toast(logged ? "Nothing found" : "Sign in from Settings to see your stuff"); return; }
   const CAR_ROWS = ["Quick picks"], LIST_ROWS = ["Music videos"];   // CAR_ROWS: se ven como carrusel aunque YouTube las mande como lista   // filas que se ven como lista de canciones
-  const newRows = d.rows.map(x => [x[0], x[1].map(i => ({ id: i.id, bid: i.bid, k: LIST_ROWS.includes(x[0]) ? "l" : CAR_ROWS.includes(x[0]) ? "c" : i.k, t: i.t, s: i.s, bg: "url('" + (i.img || (stack.length ? dImg : "")).replace(/=w\d+-h\d+[^'"()\s]*/, "=w544-h544-l90-rj").replace(/['"()\s]/g, "") + "')" }))]);
+  const newRows = d.rows.map(x => [x[0], x[1].map(i => ({ id: i.id, bid: i.bid, k: LIST_ROWS.includes(x[0]) ? "l" : CAR_ROWS.includes(x[0]) ? "c" : i.k, t: i.t, s: i.s, bg: "url('" + (i.img || (stack.length ? dImg : "")).replace(/=w\d+-h\d+[^'"()\s]*/, "=w544-h544-l90-rj").replace(/=s\d+-c[^'"()\s]*/, "=s400-c-k-c0x00ffffff-no-rj").replace(/['"()\s]/g, "") + "')" }))]);
   const plain = !stack.length && !curQ, same = plain && shownKey == d.key, pr = r, pc = c;
   if (same && JSON.stringify(cache[d.key]) == JSON.stringify(newRows)) { endSplash(true); return; }   // nada cambió
   T[mode].rows = newRows;
@@ -379,13 +381,15 @@ function onData(d) {
   render(); endSplash(true);
   if (same) { r = Math.min(pr, newRows.length - 1); c = Math.min(pc, newRows[r][1].length - 1); refresh(); }   // no te mueve de lugar
   $("hs").textContent = curQ ? "Results for “" + curQ + "”" : NAME[mode];
-  if (curQ) { $("ht").textContent = "Search"; } else if (stack.length) { $("ht").textContent = dTitle; }
+  if (curQ) { $("ht").textContent = "Search"; } else if (stack.length) { $("ht").textContent = dTitle; if (dSub) { $("hs").textContent = dSub; } }
 }
 function drill(it) {   // abre un álbum, playlist o artista
   stack.push({ rows: T[mode].rows, r, c, ht: $("ht").textContent, hs: $("hs").textContent, img: dImg });
-  dImg = (it.bg || "").replace(/^url\('|'\)$/g, ""); dTitle = it.t; cur = mode + "|" + it.bid; curQ = "";
+  dImg = (it.bg || "").replace(/^url\('|'\)$/g, ""); dTitle = it.t; dSub = it.s || "";
+  const isCh = mode == "video" && /^UC[\w-]{22}$/.test(it.bid), id = isCh ? it.bid + "#vd" : it.bid;   // canal: sus videos, por fecha
+  cur = mode + "|" + id; curQ = "";
   $("hs").textContent = "Loading…";
-  sendQ("browse|" + mode + "|" + it.bid + "|" + it.t.replace(/\|/g, ""));
+  sendQ("browse|" + mode + "|" + id + "|" + it.t.replace(/\|/g, ""));
 }
 function undrill() {
   const s = stack.pop();
