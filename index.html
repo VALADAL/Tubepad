@@ -36,7 +36,7 @@ body.menu #main{transform:translateX(3vh)}
 .lbl{font-size:2.6vh;font-weight:700;margin-bottom:2vh}
 .track{display:flex;gap:var(--gap);transition:transform .55s var(--ease);transform:translateX(calc(var(--off,0) * (var(--tw) + var(--gap)) * -1))}
 .tile{flex:none;width:var(--tw)}
-.art{width:var(--tw);height:var(--th);border-radius:.6vh;background:center/cover;transition:transform .5s var(--spring),box-shadow .4s}
+.art{background-color:rgba(255,255,255,.07);width:var(--tw);height:var(--th);border-radius:.6vh;background:center/cover;transition:transform .5s var(--spring),box-shadow .4s}
 .tile.f .art{transform:scale(1.07);box-shadow:0 0 0 .4vh var(--cream),0 3vh 7vh rgba(0,0,0,.6)}
 .nm{margin-top:1.4vh;font-size:2vh;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sb{font-size:1.7vh;color:var(--mute)}
@@ -101,7 +101,7 @@ body.gate #gate{display:flex}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01s!important}}
 #splash{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3.4vh;background:radial-gradient(circle at 50% 42%,#2f2019,var(--bg) 72%);opacity:0;visibility:hidden;transition:opacity .7s,visibility .7s}
 body.splash #splash{opacity:1;visibility:visible}
-#splash svg{height:15vh;filter:drop-shadow(0 1.5vh 4vh rgba(255,0,0,.35));animation:sp 1.8s ease-in-out infinite}
+#splash svg{height:12vh;filter:drop-shadow(0 1.5vh 4vh rgba(255,0,0,.35));animation:sp 1.8s ease-in-out infinite}
 @keyframes sp{50%{transform:scale(1.08)}}
 .spt{font-weight:800;font-size:6vh;letter-spacing:-.02em}.spt span{font-weight:600;color:var(--mute)}
 .spb{width:26vh;height:.6vh;border-radius:9px;background:rgba(255,255,255,.15);overflow:hidden}
@@ -121,7 +121,7 @@ body.splash #splash{opacity:1;visibility:visible}
 <div id="kbh"><div class="kh" style="--i:0"><b>A</b>Type</div><div class="kh" style="--i:1"><b>X</b>Delete</div><div class="kh" style="--i:2"><b>Y</b>Space</div><div class="kh" style="--i:3"><b>☰</b>Go</div><div class="kh" style="--i:4"><b>B</b>Close</div><div class="kh" style="--i:5"><b>⧉</b>Hide</div></div>
 <div id="gate"><div class="gt">Sign in</div><div class="gs">Connect your Google account to continue</div><button class="sbtn f" id="gbtn">Sign in</button><div class="gh">Press A · a window opens to sign in (use mouse or keyboard there)</div></div>
 <div id="np"><div id="npc"></div><div id="npi"><div id="npt"></div><div id="npa"></div><div id="npb"><i></i></div><div id="nptm"></div></div></div><div id="toast"></div>
-<div id="splash"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#ff0000"/><circle cx="50" cy="50" r="29" fill="none" stroke="#fff" stroke-width="3.6"/><path d="M42 36L68 50L42 64Z" fill="#fff"/></svg><div class="spt">YouTube <span>Music</span></div><div class="spb"><i></i></div></div>
+<div id="splash"><svg viewBox="0 0 100 70"><rect width="100" height="70" rx="20" fill="#ff0000"/><path d="M40 20L68 35L40 50Z" fill="#fff"/></svg><div class="spt">YouTube</div><div class="spb"><i></i></div></div></div>
 
 <script>
 // ---------- Utilidades ----------
@@ -174,7 +174,7 @@ function rowHtml(row, ri) {
 const SEARCH_SVG = '<svg viewBox="0 0 24 24" style="height:2.4vh;display:block" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>';
 const esc = s => String(s).replace(/[&<>"']/g, ch => "&#" + ch.charCodeAt(0) + ";");
 function tile(n, i) {   // n puede ser texto (ejemplo) o {id, t, s, bg} (real)
-  const o = typeof n == "string" ? { t: n, s: "", bg: art(i + (mode == "video" ? 3 : 0)) } : n;
+  const o = typeof n == "string" ? { t: n == "…" ? "" : n, s: "", bg: "none" } : n;   // texto = esqueleto de carga
   return '<div class="tile"><div class="art" style="background-image:' + esc(o.bg) + '"></div><div class="nm">' + esc(o.t) + '</div><div class="sb">' + esc(o.s) + '</div></div>';
 }
 function render() {
@@ -190,7 +190,7 @@ function render() {
 
 // Pone el fondo difuminado con la carátula (cruza entre dos capas para que sea suave)
 function setBg(img) {
-  if (!img || img == lastBg) { return; }
+  if (!img || img == "none" || img == lastBg) { return; }
   lastBg = img;
   const a = $("bgA"), b = $("bgB");
   const next = bgOn ? a : b, old = bgOn ? b : a;
@@ -344,6 +344,7 @@ const BROWSE = {
   music: { "Home": "FEmusic_home;FEmusic_charts", "New releases": "FEmusic_new_releases_albums;Music videos=FEmusic_new_releases_videos", "Charts": "FEmusic_charts", "Library": "Playlists=FEmusic_liked_playlists;Albums=FEmusic_liked_albums;Artists=FEmusic_library_corpus_artists;Songs=FEmusic_liked_videos;Podcasts=FEmusic_library_non_music_audio_list", "History": "FEmusic_history" },
   video: { "Home": "FEwhat_to_watch", "Subscriptions": "FEsubscriptions", "Watch later": "VLWL", "History": "FEhistory" }
 };
+const cache = {}; let shownKey = "";
 let curQ = "", ki = 0, kq = "", stack = [], dImg = "", dTitle = "", lastM = null;
 const sendQ = m => { try { window.chrome.webview.postMessage(m); } catch (e) { } };
 function load() {
@@ -351,14 +352,24 @@ function load() {
   if (!id || !logged) { return; }
   stack = [];
   cur = mode + "|" + id; curQ = "";
+  const hit = cache[cur];   // si ya la vimos, se muestra al instante y se actualiza por detrás
+  T[mode].rows = hit || [["Loading…", ["…", "…", "…", "…", "…"]]];
+  shownKey = hit ? cur : "";
+  render();
+  $("hs").textContent = hit ? NAME[mode] : "Loading…";
   sendQ("browse|" + mode + "|" + id + "|" + (name == "Subscriptions" ? "~" : name));   // "~" = una fila por canal
 }
 function onData(d) {
   if (d.key != cur) { return; }
   if (d.error || !d.rows.length) { endSplash(true); toast(logged ? "Nothing found" : "Sign in from Settings to see your stuff"); return; }
   const CAR_ROWS = ["Quick picks"], LIST_ROWS = ["Music videos"];   // CAR_ROWS: se ven como carrusel aunque YouTube las mande como lista   // filas que se ven como lista de canciones
-  T[mode].rows = d.rows.map(x => [x[0], x[1].map(i => ({ id: i.id, bid: i.bid, k: LIST_ROWS.includes(x[0]) ? "l" : CAR_ROWS.includes(x[0]) ? "c" : i.k, t: i.t, s: i.s, bg: "url('" + (i.img || (stack.length ? dImg : "")).replace(/=w\d+-h\d+[^'"()\s]*/, "=w544-h544-l90-rj").replace(/['"()\s]/g, "") + "')" }))]);
+  const newRows = d.rows.map(x => [x[0], x[1].map(i => ({ id: i.id, bid: i.bid, k: LIST_ROWS.includes(x[0]) ? "l" : CAR_ROWS.includes(x[0]) ? "c" : i.k, t: i.t, s: i.s, bg: "url('" + (i.img || (stack.length ? dImg : "")).replace(/=w\d+-h\d+[^'"()\s]*/, "=w544-h544-l90-rj").replace(/['"()\s]/g, "") + "')" }))]);
+  const plain = !stack.length && !curQ, same = plain && shownKey == d.key, pr = r, pc = c;
+  if (same && JSON.stringify(cache[d.key]) == JSON.stringify(newRows)) { endSplash(true); return; }   // nada cambió
+  T[mode].rows = newRows;
+  if (plain) { cache[d.key] = newRows; shownKey = d.key; }
   render(); endSplash(true);
+  if (same) { r = Math.min(pr, newRows.length - 1); c = Math.min(pc, newRows[r][1].length - 1); refresh(); }   // no te mueve de lugar
   $("hs").textContent = curQ ? "Results for “" + curQ + "”" : NAME[mode];
   if (curQ) { $("ht").textContent = "Search"; } else if (stack.length) { $("ht").textContent = dTitle; }
 }
