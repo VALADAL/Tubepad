@@ -23,7 +23,7 @@ body.menu .bub.f{background:var(--cream);color:var(--bg);transform:translateX(1.
 
 /* Contenido */
 #main{position:fixed;left:7vw;right:0;top:9vh;bottom:0;transition:opacity .5s,filter .5s,transform .6s var(--ease),top .6s var(--ease)}
-body.hasnp #main{top:17vh}
+body.hasnp #ht{max-width:calc(90vw - 41vh)}
 body.menu #main,body.sheet #main{opacity:.25;filter:blur(.8vh)}
 body.now #main{opacity:.4;filter:blur(.6vh)}
 body.menu #main{transform:translateX(3vh)}
@@ -44,7 +44,7 @@ body.menu #main{transform:translateX(3vh)}
 .nm,.sb{transition:transform .35s var(--ease)}
 
 /* Selector de modo */
-#mode{position:fixed;top:4vh;right:5vw;z-index:4;display:flex;border-radius:99px;overflow:hidden;font-size:1.9vh;font-weight:500;background:rgba(0,0,0,.25);-webkit-backdrop-filter:blur(2vh);backdrop-filter:blur(2vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.3)}
+#mode{position:fixed;top:4vh;left:0;right:0;margin:0 auto;width:fit-content;z-index:4;display:flex;border-radius:99px;overflow:hidden;font-size:1.9vh;font-weight:500;background:rgba(0,0,0,.25);-webkit-backdrop-filter:blur(2vh);backdrop-filter:blur(2vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.3)}
 #mode span{padding:1vh 2.4vh;color:var(--mute);transition:background .3s,color .3s}
 #mode span.on{background:var(--cream);color:var(--bg)}
 #mode{opacity:0;transform:translateY(-3vh);pointer-events:none;transition:opacity .4s,transform .6s var(--spring)}
@@ -70,7 +70,7 @@ body.play #player{display:block}
 .kq{font:500 3.4vh Figtree,"Segoe UI",sans-serif;margin-bottom:2.4vh;min-height:4.4vh}
 .kg{display:grid;grid-template-columns:repeat(8,1fr);gap:1vh}.kbk{padding:1.2vh 0;text-align:center}
 .kbk.go{grid-column:span 2;background:#2f6bff;color:#fff;box-shadow:none}.kbk.go.f{background:#5b8cff;box-shadow:0 0 0 .4vh var(--cream)}
-#np{position:fixed;left:3vw;top:3vh;z-index:6;display:none;width:38vh;height:11.4vh;border-radius:2vh;background:rgba(14,11,9,.6);-webkit-backdrop-filter:blur(2.4vh);backdrop-filter:blur(2.4vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.18);transition:width .65s var(--spring),height .65s var(--spring),border-radius .5s,background .4s}
+#np{position:fixed;right:3vw;top:3vh;z-index:6;display:none;width:38vh;height:11.4vh;border-radius:2vh;background:rgba(14,11,9,.6);-webkit-backdrop-filter:blur(2.4vh);backdrop-filter:blur(2.4vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.18);transition:width .65s var(--spring),height .65s var(--spring),border-radius .5s,background .4s}
 #np.on{display:block}
 body.now #np{width:50vh;height:68vh;border-radius:3vh;background:rgba(14,11,9,.74)}
 #npc{position:absolute;left:1.2vh;top:1.2vh;width:9vh;height:9vh;border-radius:1vh;background:#333 center/cover;transition:left .65s var(--spring),top .65s var(--spring),width .65s var(--spring),height .65s var(--spring),border-radius .5s,box-shadow .5s}
@@ -99,9 +99,17 @@ body.gate #gate{display:flex}
 #toast{position:fixed;left:50%;bottom:12vh;z-index:9;transform:translate(-50%,2vh);opacity:0;padding:1.4vh 3vh;border-radius:99px;font-size:1.9vh;font-weight:500;background:var(--cream);color:var(--bg);transition:all .4s var(--ease);pointer-events:none}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01s!important}}
+#splash{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3.4vh;background:radial-gradient(circle at 50% 42%,#2f2019,var(--bg) 72%);opacity:0;visibility:hidden;transition:opacity .7s,visibility .7s}
+body.splash #splash{opacity:1;visibility:visible}
+#splash svg{height:15vh;filter:drop-shadow(0 1.5vh 4vh rgba(255,0,0,.35));animation:sp 1.8s ease-in-out infinite}
+@keyframes sp{50%{transform:scale(1.08)}}
+.spt{font-weight:800;font-size:6vh;letter-spacing:-.02em}.spt span{font-weight:600;color:var(--mute)}
+.spb{width:26vh;height:.6vh;border-radius:9px;background:rgba(255,255,255,.15);overflow:hidden}
+.spb i{display:block;width:40%;height:100%;border-radius:9px;background:var(--cream);animation:sb 1.3s var(--ease) infinite}
+@keyframes sb{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
 </style>
 </head>
-<body>
+<body class="splash">
 
 <div class="bg" id="bgA"></div><div class="bg" id="bgB"></div><div id="shade"></div>
 
@@ -113,6 +121,7 @@ body.gate #gate{display:flex}
 <div id="kbh"><div class="kh" style="--i:0"><b>A</b>Type</div><div class="kh" style="--i:1"><b>X</b>Delete</div><div class="kh" style="--i:2"><b>Y</b>Space</div><div class="kh" style="--i:3"><b>☰</b>Go</div><div class="kh" style="--i:4"><b>B</b>Close</div><div class="kh" style="--i:5"><b>⧉</b>Hide</div></div>
 <div id="gate"><div class="gt">Sign in</div><div class="gs">Connect your Google account to continue</div><button class="sbtn f" id="gbtn">Sign in</button><div class="gh">Press A · a window opens to sign in (use mouse or keyboard there)</div></div>
 <div id="np"><div id="npc"></div><div id="npi"><div id="npt"></div><div id="npa"></div><div id="npb"><i></i></div><div id="nptm"></div></div></div><div id="toast"></div>
+<div id="splash"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#ff0000"/><circle cx="50" cy="50" r="29" fill="none" stroke="#fff" stroke-width="3.6"/><path d="M42 36L68 50L42 64Z" fill="#fff"/></svg><div class="spt">YouTube <span>Music</span></div><div class="spb"><i></i></div></div>
 
 <script>
 // ---------- Utilidades ----------
@@ -238,7 +247,14 @@ function openSheet() {
   document.body.classList.add("sheet");
 }
 function closeSheet() { zone = "main"; document.body.classList.remove("sheet", "kbh"); }
-let hintT = 0, kbHints = true;
+let hintT = 0, kbHints = true, splashDone = false;
+const splashT0 = performance.now();
+function endSplash(openIt) {   // quita la pantalla de carga y (si todo cargó) abre el menú
+  if (splashDone) { return; }
+  splashDone = true;
+  setTimeout(() => { document.body.classList.remove("splash"); if (openIt && zone == "main") { openMenu(); } }, Math.max(0, 1500 - (performance.now() - splashT0)));
+}
+setTimeout(() => endSplash(true), 10000);   // por si algo tarda de más
 function toggleHints() {   // como Controllify: sale todo y se esconde solo
   const on = !document.body.classList.contains("hints");
   document.body.classList.toggle("hints", on);
@@ -260,6 +276,7 @@ function sheetOk() {
 
 // ---------- Control (teclado y gamepad usan lo mismo) ----------
 function press(a) {
+  if (document.body.classList.contains("splash")) { return; }   // mientras carga no se mueve nada
   if (zone == "gate") { if (a == "ok") { sendQ("login"); } return; }
   if (zone == "kb") { return kbPress(a); }   // en el teclado los botones son solo del teclado
   if (a == "menu") { toggleHints(); return; }   // botón Menu: muestra los controles un momento
@@ -338,10 +355,10 @@ function load() {
 }
 function onData(d) {
   if (d.key != cur) { return; }
-  if (d.error || !d.rows.length) { toast(logged ? "Nothing found" : "Sign in from Settings to see your stuff"); return; }
+  if (d.error || !d.rows.length) { endSplash(true); toast(logged ? "Nothing found" : "Sign in from Settings to see your stuff"); return; }
   const CAR_ROWS = ["Quick picks"], LIST_ROWS = ["Music videos"];   // CAR_ROWS: se ven como carrusel aunque YouTube las mande como lista   // filas que se ven como lista de canciones
   T[mode].rows = d.rows.map(x => [x[0], x[1].map(i => ({ id: i.id, bid: i.bid, k: LIST_ROWS.includes(x[0]) ? "l" : CAR_ROWS.includes(x[0]) ? "c" : i.k, t: i.t, s: i.s, bg: "url('" + (i.img || (stack.length ? dImg : "")).replace(/=w\d+-h\d+[^'"()\s]*/, "=w544-h544-l90-rj").replace(/['"()\s]/g, "") + "')" }))]);
-  render();
+  render(); endSplash(true);
   $("hs").textContent = curQ ? "Results for “" + curQ + "”" : NAME[mode];
   if (curQ) { $("ht").textContent = "Search"; } else if (stack.length) { $("ht").textContent = dTitle; }
 }
@@ -420,7 +437,7 @@ function kbGo() {
 function gateUpdate() {   // sin sesión no se puede usar nada: pantalla de inicio de sesión
   const g = !logged && ready;
   document.body.classList.toggle("gate", g);
-  if (g) { document.body.classList.remove("sheet", "menu", "now", "kbh"); zone = "gate"; }
+  if (g) { endSplash(false); document.body.classList.remove("sheet", "menu", "now", "kbh"); zone = "gate"; }
   else if (zone == "gate") { zone = "main"; }
 }
 $("gbtn").onclick = () => sendQ("login");
