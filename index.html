@@ -17,11 +17,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--cream);fo
 /* Menú de burbujas (sale por la izquierda) */
 #menu{position:fixed;left:3vw;top:50%;transform:translateY(-50%);z-index:5;display:flex;flex-direction:column;gap:1.4vh;pointer-events:none}
 .bub{width:fit-content;padding:1.5vh 3vh;border-radius:99px;font-size:2.1vh;font-weight:500;background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(2.4vh);backdrop-filter:blur(2.4vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.2);opacity:0;transform:translateX(-14vh) scale(.8);transition:opacity .3s,transform .5s var(--spring),background .3s,color .3s}
-body.menu .bub{opacity:1;transform:none;transition-delay:calc(var(--i) * 60ms)}
+body.menu .bub{opacity:1;transform:none}
+body.menu.opening .bub{transition-delay:calc(var(--i) * 60ms)}
 body.menu .bub.f{background:var(--cream);color:var(--bg);transform:translateX(1.6vh) scale(1.06)}
 
 /* Contenido */
-#main{position:fixed;left:7vw;right:0;top:9vh;bottom:0;transition:opacity .5s,filter .5s,transform .6s var(--ease)}
+#main{position:fixed;left:7vw;right:0;top:9vh;bottom:0;transition:opacity .5s,filter .5s,transform .6s var(--ease),top .6s var(--ease)}
+body.hasnp #main{top:17vh}
 body.menu #main,body.sheet #main{opacity:.25;filter:blur(.8vh)}
 body.now #main{opacity:.4;filter:blur(.6vh)}
 body.menu #main{transform:translateX(3vh)}
@@ -68,7 +70,7 @@ body.play #player{display:block}
 .kq{font:500 3.4vh Figtree,"Segoe UI",sans-serif;margin-bottom:2.4vh;min-height:4.4vh}
 .kg{display:grid;grid-template-columns:repeat(8,1fr);gap:1vh}.kbk{padding:1.2vh 0;text-align:center}
 .kbk.go{grid-column:span 2;background:#2f6bff;color:#fff;box-shadow:none}.kbk.go.f{background:#5b8cff;box-shadow:0 0 0 .4vh var(--cream)}
-#np{position:fixed;left:3vw;bottom:3vh;z-index:6;display:none;width:38vh;height:11.4vh;border-radius:2vh;background:rgba(14,11,9,.6);-webkit-backdrop-filter:blur(2.4vh);backdrop-filter:blur(2.4vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.18);transition:width .65s var(--spring),height .65s var(--spring),border-radius .5s,background .4s}
+#np{position:fixed;left:3vw;top:3vh;z-index:6;display:none;width:38vh;height:11.4vh;border-radius:2vh;background:rgba(14,11,9,.6);-webkit-backdrop-filter:blur(2.4vh);backdrop-filter:blur(2.4vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.18);transition:width .65s var(--spring),height .65s var(--spring),border-radius .5s,background .4s}
 #np.on{display:block}
 body.now #np{width:50vh;height:68vh;border-radius:3vh;background:rgba(14,11,9,.74)}
 #npc{position:absolute;left:1.2vh;top:1.2vh;width:9vh;height:9vh;border-radius:1vh;background:#333 center/cover;transition:left .65s var(--spring),top .65s var(--spring),width .65s var(--spring),height .65s var(--spring),border-radius .5s,box-shadow .5s}
@@ -208,7 +210,7 @@ function refresh() {
 }
 
 // ---------- Menú, modo y ajustes ----------
-function openMenu() { zone = "menu"; mi = sec; document.body.classList.add("menu"); }
+function openMenu() { zone = "menu"; mi = sec; document.body.classList.add("menu", "opening"); clearTimeout(openMenu.t); openMenu.t = setTimeout(() => document.body.classList.remove("opening"), 700); }
 function closeMenu() { zone = "main"; document.body.classList.remove("menu"); }
 function setMode(m) {
   mode = m; sec = T[m].start;
@@ -337,8 +339,8 @@ function load() {
 function onData(d) {
   if (d.key != cur) { return; }
   if (d.error || !d.rows.length) { toast(logged ? "Nothing found" : "Sign in from Settings to see your stuff"); return; }
-  const LIST_ROWS = ["Music videos"];   // filas que se ven como lista de canciones
-  T[mode].rows = d.rows.map(x => [x[0], x[1].map(i => ({ id: i.id, bid: i.bid, k: LIST_ROWS.includes(x[0]) ? "l" : i.k, t: i.t, s: i.s, bg: "url('" + (i.img || (stack.length ? dImg : "")).replace(/['"()\s]/g, "") + "')" }))]);
+  const CAR_ROWS = ["Quick picks"], LIST_ROWS = ["Music videos"];   // CAR_ROWS: se ven como carrusel aunque YouTube las mande como lista   // filas que se ven como lista de canciones
+  T[mode].rows = d.rows.map(x => [x[0], x[1].map(i => ({ id: i.id, bid: i.bid, k: LIST_ROWS.includes(x[0]) ? "l" : CAR_ROWS.includes(x[0]) ? "c" : i.k, t: i.t, s: i.s, bg: "url('" + (i.img || (stack.length ? dImg : "")).replace(/=w\d+-h\d+[^'"()\s]*/, "=w544-h544-l90-rj").replace(/['"()\s]/g, "") + "')" }))]);
   render();
   $("hs").textContent = curQ ? "Results for “" + curQ + "”" : NAME[mode];
   if (curQ) { $("ht").textContent = "Search"; } else if (stack.length) { $("ht").textContent = dTitle; }
@@ -366,7 +368,7 @@ function onMusic(m) {   // la canción suena en segundo plano; aquí solo mostra
   const tm = x => Math.floor(x / 60) + ":" + String(Math.floor(x % 60)).padStart(2, "0");
   const pct = (m.dur ? Math.min(100, m.pos / m.dur * 100) : 0) + "%";
   const ttl = m.ad ? "Advertisement" : m.t, sub = m.ad ? (m.sk ? "Press X to skip ad" : "Ad playing…") : m.a;
-  $("np").classList.add("on");
+  $("np").classList.add("on"); document.body.classList.add("hasnp");   // el contenido baja para dejarle lugar arriba
   $("npt").textContent = (m.p ? "▶ " : "❚❚ ") + ttl; $("npa").textContent = sub;
   $("npc").style.backgroundImage = "url('" + big + "')";
   $("npb").firstChild.style.width = pct;
