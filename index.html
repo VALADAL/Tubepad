@@ -23,6 +23,7 @@ body.menu .bub.f{background:var(--cream);color:var(--bg);transform:translateX(1.
 /* Contenido */
 #main{position:fixed;left:7vw;right:0;top:9vh;bottom:0;transition:opacity .5s,filter .5s,transform .6s var(--ease)}
 body.menu #main,body.sheet #main{opacity:.25;filter:blur(.8vh)}
+body.now #main{opacity:.4;filter:blur(.6vh)}
 body.menu #main{transform:translateX(3vh)}
 #ht{font-weight:800;font-size:9vh;line-height:1.04;letter-spacing:-.025em;text-shadow:0 .4vh 3vh rgba(0,0,0,.6),0 0 .6vh rgba(0,0,0,.35)}
 #hs{margin-top:1.4vh;font-size:2.3vh;font-weight:600;color:var(--mute)}
@@ -48,7 +49,8 @@ body.menu #main{transform:translateX(3vh)}
 body.modeshow #mode{opacity:1;transform:none}
 
 /* Controles: abajo a la derecha, sin tapar el contenido */
-#hints{position:fixed;right:3vw;bottom:3vh;z-index:6;display:flex;gap:2.2vh;padding:1.1vh 2vh;border-radius:99px;font-size:1.6vh;font-weight:500;background:rgba(14,11,9,.6);-webkit-backdrop-filter:blur(2.4vh);backdrop-filter:blur(2.4vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.18)}
+#hints{position:fixed;right:3vw;bottom:3vh;z-index:10;display:flex;gap:2.2vh;padding:1.1vh 2vh;border-radius:99px;font-size:1.6vh;font-weight:500;background:rgba(14,11,9,.6);-webkit-backdrop-filter:blur(2.4vh);backdrop-filter:blur(2.4vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.18);opacity:0;transform:translateY(2.4vh) scale(.96);pointer-events:none;transition:opacity .35s,transform .55s var(--spring)}
+body.hints #hints{opacity:1;transform:none}
 #hints b{display:inline-grid;place-items:center;width:2.6vh;height:2.6vh;margin-right:.7vh;border-radius:50%;background:rgba(255,255,255,.2);font-size:1.4vh;font-weight:500}
 
 /* Settings */
@@ -66,13 +68,25 @@ body.play #player{display:block}
 .kq{font:500 3.4vh Figtree,"Segoe UI",sans-serif;margin-bottom:2.4vh;min-height:4.4vh}
 .kg{display:grid;grid-template-columns:repeat(8,1fr);gap:1vh}.kbk{padding:1.2vh 0;text-align:center}
 .kbk.go{grid-column:span 2;background:#2f6bff;color:#fff;box-shadow:none}.kbk.go.f{background:#5b8cff;box-shadow:0 0 0 .4vh var(--cream)}
-#np{position:fixed;left:3vw;bottom:3vh;z-index:6;display:none;align-items:center;gap:2vh;width:38vh;padding:1.2vh 2.4vh 1.2vh 1.2vh;border-radius:2vh;background:rgba(14,11,9,.6);-webkit-backdrop-filter:blur(2.4vh);backdrop-filter:blur(2.4vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.18)}
-#np.on{display:flex}
-#npc{width:9vh;height:9vh;border-radius:1vh;background:#333 center/cover;flex:none}
-#npi{min-width:0;flex:1}#npt,#npa{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#npt{font-size:2vh;font-weight:500}#npa{font-size:1.7vh;color:var(--mute)}
-#npb{height:.5vh;border-radius:9px;background:rgba(255,255,255,.2);margin-top:1.2vh}#npb i{display:block;height:100%;width:0;border-radius:9px;background:var(--cream)}
-#ht{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:86vw}
+#np{position:fixed;left:3vw;bottom:3vh;z-index:6;display:none;width:38vh;height:11.4vh;border-radius:2vh;background:rgba(14,11,9,.6);-webkit-backdrop-filter:blur(2.4vh);backdrop-filter:blur(2.4vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.18);transition:width .65s var(--spring),height .65s var(--spring),border-radius .5s,background .4s}
+#np.on{display:block}
+body.now #np{width:50vh;height:68vh;border-radius:3vh;background:rgba(14,11,9,.74)}
+#npc{position:absolute;left:1.2vh;top:1.2vh;width:9vh;height:9vh;border-radius:1vh;background:#333 center/cover;transition:left .65s var(--spring),top .65s var(--spring),width .65s var(--spring),height .65s var(--spring),border-radius .5s,box-shadow .5s}
+body.now #npc{left:3vh;top:3vh;width:44vh;height:44vh;border-radius:1.8vh;box-shadow:0 3vh 7vh rgba(0,0,0,.55)}
+#npi{position:absolute;left:11.2vh;right:2.4vh;top:2.3vh;min-width:0;transition:left .65s var(--spring),right .65s var(--spring),top .65s var(--spring)}
+body.now #npi{left:3.4vh;right:3.4vh;top:50.5vh}
+#npt,#npa{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#npt{font-size:2vh;font-weight:500;transition:font-size .5s var(--ease)}#npa{font-size:1.7vh;color:var(--mute);transition:font-size .5s var(--ease)}
+body.now #npt{font-size:3.6vh;font-weight:600}body.now #npa{font-size:2.2vh}
+#npb{height:.5vh;border-radius:9px;background:rgba(255,255,255,.2);margin-top:1.2vh;transition:height .5s,margin .5s}#npb i{display:block;height:100%;width:0;border-radius:9px;background:var(--cream)}
+body.now #npb{height:.8vh;margin-top:2.2vh}
+#nptm{height:0;margin-top:0;overflow:hidden;opacity:0;font-size:1.8vh;color:var(--mute);transition:opacity .4s,height .5s,margin .5s}
+body.now #nptm{height:2.4vh;margin-top:1vh;opacity:1}
+/* Atajos del teclado en pantalla: burbujas a la izquierda (View las esconde/muestra) */
+#kbh{position:fixed;left:3vw;top:50%;transform:translateY(-50%);z-index:9;display:flex;flex-direction:column;gap:1.4vh;pointer-events:none}
+.kh{display:flex;align-items:center;gap:1.3vh;width:fit-content;padding:1.2vh 2.8vh 1.2vh 1.4vh;border-radius:99px;font-size:2vh;font-weight:500;background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(2.4vh);backdrop-filter:blur(2.4vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.2);opacity:0;transform:translateX(-14vh) scale(.8);transition:opacity .3s,transform .5s var(--spring)}
+.kh b{display:inline-grid;place-items:center;min-width:3vh;height:3vh;padding:0 .7vh;border-radius:99px;background:rgba(255,255,255,.22);font-size:1.5vh;font-weight:600}
+body.kbh .kh{opacity:1;transform:none;transition-delay:calc(var(--i) * 60ms)}
 .li{display:flex;align-items:center;gap:2vh;height:8.4vh;width:56vw;padding:0 1.6vh;border-radius:1.2vh;transition:background .25s,transform .4s var(--spring)}
 .li.f{background:rgba(255,255,255,.14);transform:translateX(1vh);box-shadow:inset 0 0 0 .2vh rgba(255,255,255,.3)}
 .lc{width:6.4vh;height:6.4vh;border-radius:.6vh;background:#333 center/cover;flex:none}.lt{min-width:0}.lt .nm,.lt .sb{margin:0;transform:none!important}
@@ -80,14 +94,6 @@ body.play #player{display:block}
 body.gate #gate{display:flex}
 .gt{font-weight:800;font-size:11vh;letter-spacing:-.02em}.gs{font-size:2.4vh;color:var(--mute)}.gh{font-size:1.7vh;color:var(--mute)}
 #gate .sbtn{font-size:2.6vh;padding:1.6vh 6vh}
-#now{position:fixed;inset:0;z-index:7;display:none;flex-direction:column;align-items:center;justify-content:center;gap:1.4vh}
-body.now #now{display:flex}
-#nowbg{position:absolute;inset:-8%;background:center/cover;filter:blur(5vh) brightness(.45) saturate(1.3)}
-#nowc{position:relative;width:56vh;height:56vh;border-radius:1.6vh;background:#333 center/cover;box-shadow:0 5vh 12vh rgba(0,0,0,.7)}
-#nowt{position:relative;margin-top:2vh;font-family:Figtree,"Segoe UI",sans-serif;font-weight:600;font-size:4.6vh;max-width:80vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#nowa{position:relative;font-size:2.2vh;color:var(--mute)}
-#nowb{position:relative;width:56vh;height:.7vh;border-radius:9px;background:rgba(255,255,255,.2)}#nowb i{display:block;height:100%;width:0;border-radius:9px;background:var(--cream)}
-#nowtm{position:relative;font-size:1.8vh;color:var(--mute)}
 #toast{position:fixed;left:50%;bottom:12vh;z-index:9;transform:translate(-50%,2vh);opacity:0;padding:1.4vh 3vh;border-radius:99px;font-size:1.9vh;font-weight:500;background:var(--cream);color:var(--bg);transition:all .4s var(--ease);pointer-events:none}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01s!important}}
@@ -100,11 +106,11 @@ body.now #now{display:flex}
 <div id="mode"><span data-m="video">YouTube</span><span data-m="music">Música</span></div>
 <div id="menu"></div>
 <div id="main"><div id="ht"></div><div id="hs">Loading…</div><div id="vp"><div id="rows"></div></div></div>
-<div id="hints"><span><b>A</b>Select</span><span><b>B</b>Menu</span><span><b>Y</b>Mode</span><span><b>X</b>Play/Pause</span><span><b>LB</b><b>RB</b>Prev/Next</span><span><b>R</b>Seek</span><span><b>⧉</b>Cover</span></div>
+<div id="hints"><span><b>A</b>Select</span><span><b>B</b>Menu</span><span><b>Y</b>Mode</span><span><b>☰</b>Hints</span><span><b>X</b>Play/Pause</span><span><b>LB</b><b>RB</b>Prev/Next</span><span><b>R</b>Seek</span><span><b>⧉</b>Cover</span></div>
 <div id="sheet"></div>
+<div id="kbh"><div class="kh" style="--i:0"><b>A</b>Type</div><div class="kh" style="--i:1"><b>X</b>Delete</div><div class="kh" style="--i:2"><b>Y</b>Space</div><div class="kh" style="--i:3"><b>☰</b>Go</div><div class="kh" style="--i:4"><b>B</b>Close</div><div class="kh" style="--i:5"><b>⧉</b>Hide</div></div>
 <div id="gate"><div class="gt">Sign in</div><div class="gs">Connect your Google account to continue</div><button class="sbtn f" id="gbtn">Sign in</button><div class="gh">Press A · a window opens to sign in (use mouse or keyboard there)</div></div>
-<div id="now"><div id="nowbg"></div><div id="nowc"></div><div id="nowt"></div><div id="nowa"></div><div id="nowb"><i></i></div><div id="nowtm"></div></div>
-<div id="np"><div id="npc"></div><div id="npi"><div id="npt"></div><div id="npa"></div><div id="npb"><i></i></div></div></div><div id="toast"></div>
+<div id="np"><div id="npc"></div><div id="npi"><div id="npt"></div><div id="npa"></div><div id="npb"><i></i></div><div id="nptm"></div></div></div><div id="toast"></div>
 
 <script>
 // ---------- Utilidades ----------
@@ -134,7 +140,7 @@ function art(i) {
 
 // ---------- Datos de cada modo ----------
 const T = {
-  music: { menu: ["Search", "Home", "New releases", "Charts", "Library", "Liked", "History", "Settings"], start: 1, rows: [["Loading…", ["…", "…", "…", "…", "…"]]] },
+  music: { menu: ["Search", "Home", "New releases", "Charts", "Library", "History", "Settings"], start: 1, rows: [["Loading…", ["…", "…", "…", "…", "…"]]] },
   video: { menu: ["Search", "Home", "Subscriptions", "Watch later", "History", "Settings"], start: 1, rows: [["Loading…", ["…", "…", "…", "…", "…"]]] }
 };
 const NAME = { music: "YouTube Music", video: "YouTube" };
@@ -229,7 +235,14 @@ function openSheet() {
   ["s0", "s1", "s2"].forEach((id, i) => { $(id).onclick = () => { si = i; sheetOk(); }; });
   document.body.classList.add("sheet");
 }
-function closeSheet() { zone = "main"; document.body.classList.remove("sheet"); }
+function closeSheet() { zone = "main"; document.body.classList.remove("sheet", "kbh"); }
+let hintT = 0, kbHints = true;
+function toggleHints() {   // como Controllify: sale todo y se esconde solo
+  const on = !document.body.classList.contains("hints");
+  document.body.classList.toggle("hints", on);
+  clearTimeout(hintT);
+  if (on) { hintT = setTimeout(() => document.body.classList.remove("hints"), 5000); }
+}
 function sheetOk() {
   if (si == 0) {
     start = start == "music" ? "video" : "music";
@@ -246,21 +259,17 @@ function sheetOk() {
 // ---------- Control (teclado y gamepad usan lo mismo) ----------
 function press(a) {
   if (zone == "gate") { if (a == "ok") { sendQ("login"); } return; }
+  if (zone == "kb") { return kbPress(a); }   // en el teclado los botones son solo del teclado
+  if (a == "menu") { toggleHints(); return; }   // botón Menu: muestra los controles un momento
   if (a == "view") { toggleNow(); return; }
   if (a == "sl" || a == "sr") { sendQ("mc|" + (a == "sl" ? "back" : "fwd")); return; }   // stick derecho: adelantar / atrasar
   if (a == "mtoggle" || a == "mnext" || a == "mprev") { sendQ("mc|" + a.slice(1)); return; }
-  if (zone == "now") { if (a == "ok") { sendQ("mc|toggle"); } else if (a == "back" || a == "menu") { toggleNow(); } return; }
-  if (zone == "kb") {
-    if (a == "left") { ki = Math.max(0, ki - 1); } else if (a == "right") { ki = Math.min(kbKeys().length - 1, ki + 1); }
-    else if (a == "up") { ki = Math.max(0, ki - 8); } else if (a == "down") { ki = Math.min(kbKeys().length - 1, ki + 8); }
-    else if (a == "ok") { return kbOk(); } else if (a == "back" || a == "menu") { closeSheet(); return; }
-    return drawKb();
-  }
+  if (zone == "now") { if (a == "ok") { sendQ("mc|toggle"); } else if (a == "back") { toggleNow(); } return; }
   if (zone == "sheet") {
     if (a == "up") { si = Math.max(0, si - 1); }
     else if (a == "down") { si = Math.min(2, si + 1); }
     else if (a == "ok") { sheetOk(); }
-    else if (a == "back" || a == "menu") { closeSheet(); }
+    else if (a == "back") { closeSheet(); }
     return refresh();
   }
   if (a == "mode") { return setMode(mode == "music" ? "video" : "music"); }
@@ -268,7 +277,7 @@ function press(a) {
     if (a == "up") { mi = Math.max(0, mi - 1); }
     else if (a == "down") { mi = Math.min(T[mode].menu.length - 1, mi + 1); }
     else if (a == "ok") { pick(mi); }
-    else if (a == "back" || a == "right" || a == "menu") { closeMenu(); }
+    else if (a == "back" || a == "right") { closeMenu(); }
     return refresh();
   }
   const rows = T[mode].rows, row = rows[r][1], lst = isList(rows[r]), n = row.length;
@@ -279,11 +288,10 @@ function press(a) {
   else if (a == "down") { if (lst && c < n - 1) { c++; } else if (r < rows.length - 1) { land(r + 1, false); } }
   else if (a == "ok") { const it = row[c]; if (typeof it == "string") { toast("Still loading…"); } else if (it.id) { play(it); } else if (it.bid) { drill(it); } }
   else if (a == "back") { if (stack.length) { undrill(); return; } openMenu(); }
-  else if (a == "menu") { openMenu(); }
   refresh();
 }
 
-const KEYS = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down", Enter: "ok", Escape: "back", Backspace: "back", m: "mode", y: "mode", v: "view", "[": "sl", "]": "sr", " ": "mtoggle", n: "mnext", p: "mprev" };
+const KEYS = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down", Enter: "ok", Escape: "back", Backspace: "back", m: "mode", y: "mode", v: "view", "[": "sl", "]": "sr", " ": "mtoggle", n: "mnext", p: "mprev", h: "menu" };
 document.addEventListener("keydown", e => {
   if (zone == "kb" && e.key.length == 1) { e.preventDefault(); kq += e.key; return drawKb(); }   // también puedes escribir con el teclado
   if (zone == "kb" && e.key == "Enter") { e.preventDefault(); if (kq.trim()) { kbGo(); } return; }
@@ -305,7 +313,7 @@ function pad() {
     for (const k in now) {
       if (!now[k]) { held[k] = 0; }
       else if (!held[k]) { press(k); held[k] = t + 300; }                          // primera pulsación
-      else if (DIRS.includes(k) && t > held[k]) { press(k); held[k] = t + 150; }   // repetir si mantienes la dirección
+      else if ((DIRS.includes(k) || (zone == "kb" && k == "mtoggle")) && t > held[k]) { press(k); held[k] = t + 150; }   // repetir si mantienes la dirección
     }
   }
   requestAnimationFrame(pad);
@@ -314,7 +322,7 @@ function pad() {
 // ---------- Datos reales y reproductor ----------
 // A qué pantalla de YouTube corresponde cada opción del menú
 const BROWSE = {
-  music: { "Home": "FEmusic_home;FEmusic_charts", "New releases": "FEmusic_new_releases_albums", "Charts": "FEmusic_charts", "Library": "Playlists=FEmusic_liked_playlists;Albums=FEmusic_liked_albums;Artists=FEmusic_library_corpus_artists;Songs=FEmusic_liked_videos;Podcasts=FEmusic_library_non_music_audio_list", "Liked": "FEmusic_liked_videos", "History": "FEmusic_history" },
+  music: { "Home": "FEmusic_home;FEmusic_charts", "New releases": "FEmusic_new_releases_albums;Music videos=FEmusic_new_releases_videos", "Charts": "FEmusic_charts", "Library": "Playlists=FEmusic_liked_playlists;Albums=FEmusic_liked_albums;Artists=FEmusic_library_corpus_artists;Songs=FEmusic_liked_videos;Podcasts=FEmusic_library_non_music_audio_list", "History": "FEmusic_history" },
   video: { "Home": "FEwhat_to_watch", "Subscriptions": "FEsubscriptions", "Watch later": "VLWL", "History": "FEhistory" }
 };
 let curQ = "", ki = 0, kq = "", stack = [], dImg = "", dTitle = "", lastM = null;
@@ -329,7 +337,8 @@ function load() {
 function onData(d) {
   if (d.key != cur) { return; }
   if (d.error || !d.rows.length) { toast(logged ? "Nothing found" : "Sign in from Settings to see your stuff"); return; }
-  T[mode].rows = d.rows.map(x => [x[0], x[1].map(i => ({ id: i.id, bid: i.bid, k: i.k, t: i.t, s: i.s, bg: "url('" + (i.img || (stack.length ? dImg : "")).replace(/['"()\s]/g, "") + "')" }))]);
+  const LIST_ROWS = ["Music videos"];   // filas que se ven como lista de canciones
+  T[mode].rows = d.rows.map(x => [x[0], x[1].map(i => ({ id: i.id, bid: i.bid, k: LIST_ROWS.includes(x[0]) ? "l" : i.k, t: i.t, s: i.s, bg: "url('" + (i.img || (stack.length ? dImg : "")).replace(/['"()\s]/g, "") + "')" }))]);
   render();
   $("hs").textContent = curQ ? "Results for “" + curQ + "”" : NAME[mode];
   if (curQ) { $("ht").textContent = "Search"; } else if (stack.length) { $("ht").textContent = dTitle; }
@@ -353,7 +362,7 @@ function play(o) {
 function onMusic(m) {   // la canción suena en segundo plano; aquí solo mostramos la barrita y la pantalla completa
   if (!m.t && !m.ad) { return; }
   lastM = m;
-  const big = (m.img || "").replace(/=w\d+-h\d+/, "=w800-h800").replace(/['"()\s]/g, "");
+  const big = (m.img || "").replace(/=w\d+-h\d+[^'"]*/, "=w1000-h1000").replace(/['"()\s]/g, "");
   const tm = x => Math.floor(x / 60) + ":" + String(Math.floor(x % 60)).padStart(2, "0");
   const pct = (m.dur ? Math.min(100, m.pos / m.dur * 100) : 0) + "%";
   const ttl = m.ad ? "Advertisement" : m.t, sub = m.ad ? (m.sk ? "Press X to skip ad" : "Ad playing…") : m.a;
@@ -361,11 +370,9 @@ function onMusic(m) {   // la canción suena en segundo plano; aquí solo mostra
   $("npt").textContent = (m.p ? "▶ " : "❚❚ ") + ttl; $("npa").textContent = sub;
   $("npc").style.backgroundImage = "url('" + big + "')";
   $("npb").firstChild.style.width = pct;
-  $("nowbg").style.backgroundImage = $("nowc").style.backgroundImage = "url('" + big + "')";
-  $("nowt").textContent = ttl; $("nowa").textContent = sub;
-  $("nowb").firstChild.style.width = pct; $("nowtm").textContent = tm(m.pos) + " / " + tm(m.dur);
+  $("nptm").textContent = tm(m.pos) + " / " + tm(m.dur);
 }
-function toggleNow() {   // botón View: carátula a pantalla completa
+function toggleNow() {   // botón View: el now playing se hace grande (sin tapar toda la pantalla)
   if (zone == "now") { zone = "main"; document.body.classList.remove("now"); }
   else if (zone == "main" && $("np").classList.contains("on")) { zone = "now"; document.body.classList.add("now"); }
 }
@@ -373,7 +380,20 @@ function toggleNow() {   // botón View: carátula a pantalla completa
 // Teclado en pantalla
 const KB0 = "abcdefghijklmnopqrstuvwxyz0123456789".split("").concat(["SPACE", "DEL"]);
 const kbKeys = () => kq.trim() ? KB0.concat(["GO"]) : KB0;   // Go solo existe cuando hay texto
-function openKb() { zone = "kb"; ki = 0; kq = ""; drawKb(); document.body.classList.add("sheet"); }
+function openKb() { zone = "kb"; ki = 0; kq = ""; drawKb(); document.body.classList.add("sheet"); document.body.classList.toggle("kbh", kbHints); document.body.classList.remove("hints"); }
+// Atajos del teclado (independientes del resto de la app): X borrar, Y espacio, Menu = Go, B cerrar, View esconde los atajos
+function kbPress(a) {
+  if (a == "view") { kbHints = !kbHints; document.body.classList.toggle("kbh", kbHints); return; }
+  if (a == "left") { ki = Math.max(0, ki - 1); } else if (a == "right") { ki = Math.min(kbKeys().length - 1, ki + 1); }
+  else if (a == "up") { ki = Math.max(0, ki - 8); } else if (a == "down") { ki = Math.min(kbKeys().length - 1, ki + 8); }
+  else if (a == "mtoggle") { kq = kq.slice(0, -1); }
+  else if (a == "mode") { kq += " "; }
+  else if (a == "menu") { if (kq.trim()) { kbGo(); } return; }
+  else if (a == "ok") { return kbOk(); }
+  else if (a == "back") { closeSheet(); return; }
+  else { return; }
+  drawKb();
+}
 function drawKb() {
   ki = Math.min(ki, kbKeys().length - 1);
   $("sheet").innerHTML = '<h2>Search ' + (mode == "music" ? "songs" : "videos") + '</h2><div class="kq">' + (esc(kq) || "&nbsp;") + '</div><div class="kg">' +
@@ -398,7 +418,7 @@ function kbGo() {
 function gateUpdate() {   // sin sesión no se puede usar nada: pantalla de inicio de sesión
   const g = !logged && ready;
   document.body.classList.toggle("gate", g);
-  if (g) { document.body.classList.remove("sheet", "menu", "now"); zone = "gate"; }
+  if (g) { document.body.classList.remove("sheet", "menu", "now", "kbh"); zone = "gate"; }
   else if (zone == "gate") { zone = "main"; }
 }
 $("gbtn").onclick = () => sendQ("login");
