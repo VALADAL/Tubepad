@@ -283,6 +283,7 @@ function sheetOk() {
 
 // ---------- Control (teclado y gamepad usan lo mismo) ----------
 function press(a) {
+  if (videoOn) { return; }   // el control es solo del reproductor de video (si no, el A cargaba otro video y la X movía la música)
   if (document.body.classList.contains("splash")) { return; }   // mientras carga no se mueve nada
   if (document.body.classList.contains("vload")) { if (a == "back") { document.body.classList.remove("vload"); sendQ("vclose"); } return; }   // cargando un video
   if (zone == "gate") { if (a == "ok") { sendQ("login"); } return; }
@@ -326,7 +327,7 @@ document.addEventListener("keydown", e => {
   if (KEYS[e.key]) { e.preventDefault(); press(KEYS[e.key]); } });
 
 const DIRS = ["left", "right", "up", "down", "sl", "sr"];
-let held = {}, padBlock = false;
+let held = {}, padBlock = false, videoOn = false;   // videoOn: hay un video a pantalla completa; esta pantalla no debe reaccionar a nada
 addEventListener("focus", () => { padBlock = true; });
 function pad() {
   const g = [...(navigator.getGamepads ? navigator.getGamepads() : [])].find(x => x);
@@ -472,7 +473,7 @@ function send(m) {
 }
 try {
   window.chrome.webview.addEventListener("message", e => {
-    if (e.data == "video:ready" || e.data == "video:closed") { document.body.classList.remove("vload"); padBlock = true; return; }
+    if (e.data == "video:ready" || e.data == "video:closed") { videoOn = e.data == "video:ready"; document.body.classList.remove("vload"); padBlock = true; held = {}; return; }
     if (typeof e.data == "string" && e.data.startsWith("music:")) { return onMusic(JSON.parse(e.data.slice(6))); }
     if (typeof e.data == "string" && e.data.startsWith("data:")) { return onData(JSON.parse(e.data.slice(5))); }
     if (e.data == "login:ok") { const was = logged, rd = ready; logged = true; ready = true; gateUpdate(); if (!was) { if (rd) { toast("Account connected"); } load(); } }
