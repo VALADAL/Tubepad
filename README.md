@@ -20,6 +20,8 @@ Tubepad is a small **Windows app**. You download it, open it, sign in, and use i
 - Search with an on-screen keyboard.
 - Your Home, subscriptions, playlists, liked videos, watch later and history.
 - Full-screen video player with its own controls. You can skip ads with a button.
+- Choose the **video quality** (up to the maximum YouTube offers). Tubepad remembers your choice.
+- When a video ends, an **Up next** screen shows suggested videos you can pick with the controller.
 - Music keeps playing while you browse, with a "now playing" bar and a big cover view.
 - Windows media controls: song, cover art and play/pause/next/previous buttons show in Windows.
 - Works with [Playnite](https://playnite.link) like any other game.
@@ -30,6 +32,10 @@ Tubepad is a small **Windows app**. You download it, open it, sign in, and use i
   <tr>
     <td width="50%"><img src="docs/screenshot-youtube.jpg" alt="YouTube home"><br><sub>YouTube</sub></td>
     <td width="50%"><img src="docs/screenshot-video.jpg" alt="Video player"><br><sub>Video player</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshot-quality.jpg" alt="Video quality picker"><br><sub>Video quality</sub></td>
+    <td width="50%"><img src="docs/screenshot-upnext.jpg" alt="Up next screen with suggested videos"><br><sub>Up next</sub></td>
   </tr>
   <tr>
     <td width="50%"><img src="docs/screenshot-nowplaying.jpg" alt="Now playing"><br><sub>Now playing</sub></td>
@@ -89,8 +95,31 @@ Press **Menu ☰ / OPTIONS** or the `H` key to see the controls on screen.
 | Go back / forward 5 seconds | Right stick ←→ | Right stick ←→ | — |
 | Volume | D-pad ↑↓ | D-pad ↑↓ | ↑ / ↓ |
 | Captions | Y | △ | C |
+| Video quality | View | CREATE | Q |
 | Close the video | B | ○ | Esc or Backspace |
 | Show / hide controls | Menu ☰ | OPTIONS | H |
+
+### Video quality
+
+Press **View** while watching a video to open the quality list. Choose **Auto** to let YouTube decide, or a fixed quality such as 1080p. Your choice is remembered and applied to every new video.
+
+| Action | Xbox | PlayStation | Keyboard |
+|---|---|---|---|
+| Open the list | View | CREATE | Q |
+| Move | D-pad ↑↓ | D-pad ↑↓ | ↑ / ↓ |
+| Choose | A | ✕ | Enter |
+| Close | B | ○ | Esc or Backspace |
+
+### Up next (when a video ends)
+
+| Action | Xbox | PlayStation | Keyboard |
+|---|---|---|---|
+| Move between videos | D-pad | D-pad | Arrow keys |
+| Play the selected video | A | ✕ | Enter |
+| Watch it again | X | □ | X |
+| Close the player | B | ○ | Esc or Backspace |
+
+If the video is part of a playlist, Tubepad goes on to the next one as usual.
 
 ## Add Tubepad to Playnite
 
@@ -140,9 +169,10 @@ Because the app isn't code-signed and the helper resumes a frozen process, Windo
 
 ## Build it yourself
 
-You need the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) on Windows. In the folder with `YTConsole.csproj` run:
+You need the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) on Windows. Open a terminal in the folder where you downloaded this repository and run:
 
 ```bash
+cd windows-app
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
 ```
 
